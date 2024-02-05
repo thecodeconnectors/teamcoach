@@ -3,7 +3,7 @@
         <div class="flex flex-col w-64">
             <div class="flex flex-col flex-grow border-r border-gray-200 pt-5 pb-4 bg-white overflow-y-auto">
                 <div class="flex items-center justify-center">
-                    <Icon name="soccer-ball" class="h-10 -mt-1 w-auto hidden md:block" />
+                    <img width="80" height="80" class="logo h-10 -mt-1 w-auto hidden md:block" :src="logo" />
                 </div>
                 <div class="mt-5 flex-grow flex flex-col ">
                     <nav class="flex-1 px-2 bg-white divide-y divide-gray-200">
@@ -50,6 +50,8 @@ const props = defineProps({
 });
 
 const fullPath = computed(() => router.currentRoute.value.fullPath);
+
+const logo = computed(() => store.logo);
 
 const bottomNavigation = computed(() => [
     {name: 'Users', route: 'users', icon: 'users', current: fullPath.value.startsWith('/users')},

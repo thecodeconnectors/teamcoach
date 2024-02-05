@@ -21,6 +21,16 @@
                             />
                         </div>
                     </div>
+                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                        <div class="sm:col-span-6">
+                            <label for="1707143111073" class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+                            <div class="flex items-center">
+                                <span v-for="avatar in state.avatars">
+                                    <img :src="`/src/assets/avatars/${avatar.id}`" :alt="avatar.name" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" :width="state.player.avatar === avatar.id ? 64 : 32" @click="state.player.avatar = avatar.id" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
                         <InputButton v-if="isEditForm" type="button" label="Delete" color="white" text-color="gray-600" @click="state.showConfirmDelete = true" />
@@ -43,6 +53,7 @@ import InputField from '@/framework/components/common/form/InputField.vue';
 import {computed, onMounted, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
+import {getAvatars} from '@/app/gamestats/avatars/avatars.api.js';
 
 const store = useStore();
 const router = useRouter();
@@ -61,6 +72,7 @@ const state = reactive({
     player: {
         id: null,
         name: null,
+        avatar: null,
     },
     positions: [],
 });
@@ -71,6 +83,11 @@ const isEditForm = computed(() => router.currentRoute.value.name === 'players.ed
 const loadPositions = async () => {
     const {data: positions} = await getPositions();
     state.positions = positions;
+};
+
+const loadAvatars = async () => {
+    const {data: avatars} = await getAvatars();
+    state.avatars = avatars;
 };
 
 const getPlayerById = async (id) => {
@@ -108,6 +125,7 @@ const deleteCurrentPlayer = async () => {
 
 onMounted(() => {
     loadPositions();
+    loadAvatars();
     if (isEditForm.value) {
         state.id = props.id;
         getPlayerById(state.id);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\HasProfilePicture;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,10 +21,14 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $email_verified_at
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
+ *
+ * @property string $avatar
+ * @property string $gravatar
+ * @property string $profile_picture
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasPermissions, HasRoles, SoftDeletes;
+    use HasApiTokens, Notifiable, HasPermissions, HasRoles, SoftDeletes, HasProfilePicture;
 
     protected $guarded = [];
 

@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignIdFor(Team::class);
             $table->string('name');
+            $table->string('avatar')->nullable();
             $table->string('position')->nullable();
             $table->timestamps();
             $table->softDeletes();

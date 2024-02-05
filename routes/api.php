@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\CurrentUserController;
 use App\Http\Controllers\EventController;
@@ -26,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('cookie', [CsrfCookieController::class, 'show'])->name('cookie.show');
 Route::get('user', [CurrentUserController::class, 'show'])->name('user.show');
 
+Route::get('avatars', [AvatarController::class, 'index']);
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('game-player-types', [GamePlayerTypeController::class, 'index']);
 Route::get('player-action-event-types', [PlayerActionEventTypeController::class, 'index']);

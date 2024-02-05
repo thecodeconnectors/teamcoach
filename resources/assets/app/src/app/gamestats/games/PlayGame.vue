@@ -21,7 +21,7 @@
                     </div>
                     <div class="grid grid-cols-12 w-full align-middle">
                         <div class="col-span-12 text-center">
-                            <span class="text-white bg-blue-500 shadow rounded-2xl py-3 px-6">
+                            <span class="w-full text-white bg-blue-500 shadow rounded-2xl py-3 px-6">
                                 {{ state.game.time_elapsed }}
                             </span>
                         </div>
@@ -39,13 +39,18 @@
                             </thead>
                             <tbody>
                             <tr v-for="player in state.game.playing" :key="player.id" :value="player.id">
-                                <td>{{ player.name }}</td>
+                                <td>
+                                    <span class="w-full flex items-left items-center">
+                                        <img :src="`/src/assets/avatars/${player.avatar}`" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" />
+                                        <span>{{ player.name }}</span>
+                                    </span>
+                                </td>
                                 <td class="text-right">
                                     {{ player.playtime }}"
                                 </td>
                                 <td class="text-right object-right">
-                                    <Icon name="refresh" class="mr-3" @click="openSubstiteMenu(player)" />
-                                    <Icon name="chart-line" @click="openPlayerMenu(player)" />
+                                    <Icon name="refresh" @click="openSubstiteMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1 mr-3" />
+                                    <Icon name="chart-line" @click="openPlayerMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1" />
                                 </td>
                             </tr>
                             </tbody>
@@ -57,12 +62,17 @@
                                 <th colspan="3" class="text-left">Substitutes</th>
                             </tr>
                             <tr v-for="player in state.game.substitutes" :key="player.id" :value="player.id">
-                                <td>{{ player.name }}</td>
+                                <td>
+                                    <span class="w-full flex items-left items-center">
+                                        <img :src="`/src/assets/avatars/${player.avatar}`" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow-md" />
+                                        <span>{{ player.name }}</span>
+                                    </span>
+                                </td>
                                 <td class="text-right">
                                     {{ player.playtime }}"
                                 </td>
                                 <td class="text-right object-right">
-                                    <Icon name="chart-line" @click="openPlayerMenu(player)" />
+                                    <Icon name="chart-line" @click="openPlayerMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1" />
                                 </td>
                             </tr>
                             </tfoot>
@@ -316,22 +326,27 @@ const getGame = async (id) => {
     const {data: game} = await getGamePlay(id);
     state.game = game;
     state.isLoading = false;
+    startTimer();
 };
 
 const start = async () => {
     await control(startGame, 'Game started', 'showConfirmStart');
+    startTimer();
 };
 
 const pause = async () => {
     await control(pauseGame, 'Game paused', 'showConfirmPause');
+    stopTimer();
 };
 
 const resume = async () => {
     await control(resumeGame, 'Game resumed', 'showConfirmResume');
+    startTimer();
 };
 
 const finish = async () => {
     await control(finishGame, 'Game finished', 'showConfirmFinish');
+    stopTimer();
 };
 
 const control = async (method, message, confirmDialog) => {
@@ -365,6 +380,29 @@ const addPlayerEvent = async () => {
         type: state.focusPlayer?.playerEvent,
     });
     store.addToastMessage({title: 'Player action added'});
+    // todo reload events
+};
+
+let timer = null;
+
+const startTimer = () => {
+    const d = new Date();
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(state.game.seconds_elapsed, 0);
+    timer = setInterval(function () {
+        if (state.game.is_playing && !state.game.is_paused) {
+            const hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+            const minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+            const seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+            state.game.time_elapsed = hours + ':' + minutes + ':' + seconds;
+        }
+        d.setTime(d.getTime() + 500);
+    }, 500);
+};
+
+const stopTimer = () => {
+    clearInterval(timer);
 };
 
 onMounted(() => {

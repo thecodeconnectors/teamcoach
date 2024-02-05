@@ -95,7 +95,7 @@ class Game extends Model
 
     public function getTimeElapsedAttribute(): string
     {
-        return sprintf('%d:%d', $this->seconds_elapsed / 3600, round($this->seconds_elapsed / 60) % 60);
+        return sprintf('%d:%d:%d', round($this->seconds_elapsed / 3600 / 60), $this->seconds_elapsed / 3600, round($this->seconds_elapsed / 60) % 60);
     }
 
     public function pausedEvent(): null|Event|Model

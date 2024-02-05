@@ -3,6 +3,7 @@ import {defineStore} from 'pinia';
 export const useStore = defineStore('main', {
     state: () => ({
         sessionStarted: false,
+        logo: '/src/assets/logo.svg',
         user: null,
         flashMessage: null,
         alertMessage: '',

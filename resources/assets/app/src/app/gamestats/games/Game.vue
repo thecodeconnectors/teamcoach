@@ -8,6 +8,15 @@
                 <div class="shadow sm:rounded-md sm:overflow-hidden">
                     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                         <div class="sm:col-span-6">
+                            <DropDownSelect
+                                v-if="state.teams.length"
+                                v-model="state.game.team_id"
+                                :options="state.teams"
+                            />
+                        </div>
+                    </div>
+                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                        <div class="sm:col-span-6">
                             <InputField id="opponent_name" v-model="state.game.opponent_name" label="Opponent" />
                         </div>
                     </div>
@@ -20,7 +29,12 @@
                         <div class="sm:col-span-6">
                             <table class="w-full">
                                 <tr v-for="player in state.game.players" :key="player.id" :value="player.id">
-                                    <td>{{ player.name }}</td>
+                                    <td>
+                                        <span class="w-full flex items-left items-center">
+                                            <img :src="`/src/assets/avatars/${player.avatar}`" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" />
+                                            <span>{{ player.name }}</span>
+                                        </span>
+                                    </td>
                                     <td>
                                         <DropDownSelect
                                             v-if="state.positions.length"
@@ -61,6 +75,7 @@ import InputField from '@/framework/components/common/form/InputField.vue';
 import {computed, onMounted, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
+import {getTeams} from '@/app/gamestats/teams/teams.api.js';
 
 const store = useStore();
 const router = useRouter();
@@ -75,6 +90,7 @@ const props = defineProps({
 const state = reactive({
     isLoading: false,
     showConfirmDelete: false,
+    teams: [],
     positions: [],
     gamePlayerTypes: [],
     game: {
@@ -88,6 +104,10 @@ const state = reactive({
 const title = computed(() => (isEditForm.value ? 'Edit Game' : 'New Game'));
 const isEditForm = computed(() => router.currentRoute.value.name === 'games.edit');
 
+const loadTeams = async () => {
+    const {data: teams} = await getTeams();
+    state.teams = teams;
+};
 const loadPositions = async () => {
     const {data: positions} = await getPositions();
     state.positions = positions;
@@ -136,6 +156,7 @@ const deleteCurrentGame = async () => {
 };
 
 onMounted(() => {
+    loadTeams();
     loadPositions();
     loadGamePlayerTypes();
 

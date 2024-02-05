@@ -38,7 +38,7 @@ class GameController extends Controller
         /** @var Game $game */
         $game = Game::query()->create($gameAttributes);
 
-        foreach (Player::query()->get() as $player) {
+        foreach (Player::query()->where('team_id', $game->team_id)->get() as $player) {
             $game->addPlayer($player);
         }
 

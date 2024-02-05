@@ -42,6 +42,12 @@ export default {
                     field: 'name',
                     label: 'Name',
                     sortable: true,
+                    displayValue: row => `<span class="w-full flex items-left items-center"><img src="/src/assets/avatars/${row.avatar}" alt="${row.avatar}" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" /> <span>${row.name}</span></span>`,
+                },
+                {
+                    field: 'position',
+                    label: 'Position',
+                    sortable: true,
                 },
             ],
             rows: [],
