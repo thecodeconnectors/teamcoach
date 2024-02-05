@@ -10,7 +10,7 @@
 
 <script setup>
 import {debounce} from '@/framework/helpers';
-import {defineEmits, defineProps, ref, watch} from 'vue';
+import {ref, watch} from 'vue';
 
 const props = defineProps({
     debounceTimeout: {

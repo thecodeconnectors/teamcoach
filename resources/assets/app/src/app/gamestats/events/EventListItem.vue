@@ -19,7 +19,6 @@
 
 <script setup>
 
-import {defineProps} from 'vue';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 
 const props = defineProps({

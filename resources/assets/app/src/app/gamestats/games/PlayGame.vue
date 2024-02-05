@@ -234,7 +234,7 @@ import {useRouter} from 'vue-router';
 import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
-import {computed, defineProps, onMounted, reactive} from 'vue';
+import {computed, onMounted, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import Icon from '@/framework/components/common/icon/Icon.vue';
 import SlideOver from '@/framework/components/common/modals/SlideOver.vue';

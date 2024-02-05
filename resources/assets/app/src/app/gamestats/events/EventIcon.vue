@@ -6,7 +6,7 @@
 
 <script setup>
 import Icon from '@/framework/components/common/icon/Icon.vue';
-import {computed, defineProps} from 'vue';
+import {computed} from 'vue';
 
 const props = defineProps({
     event: {

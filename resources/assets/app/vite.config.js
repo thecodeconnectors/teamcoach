@@ -31,7 +31,6 @@ export default defineConfig(({mode}) => {
         },
         build: {
             sourcemap: true,
-            target: 'esnext',
             rollupOptions: {
                 output: {
                     entryFileNames: 'assets/[name].js',
