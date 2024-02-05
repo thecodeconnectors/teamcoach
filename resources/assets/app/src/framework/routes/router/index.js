@@ -20,8 +20,8 @@ async function loadAndCombineRoutes() {
 routes = await loadAndCombineRoutes();
 
 const router = createRouter({
-    history: createWebHistory(),
-    //base: window.location.origin,
+    history: createWebHistory(import.meta.env.BASE_URL),
+    base: window.location.origin,
     routes,
 });
 
