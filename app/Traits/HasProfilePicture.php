@@ -18,6 +18,6 @@ trait HasProfilePicture
 
     public function getProfilePictureAttribute(): string
     {
-        return $this->avatar ?: $this->gravatar;
+        return $this->avatar ? url("storage/avatars/{$this->avatar}") : $this->gravatar;
     }
 }

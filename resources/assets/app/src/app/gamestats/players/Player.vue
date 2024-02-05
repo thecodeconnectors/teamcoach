@@ -26,7 +26,7 @@
                             <label for="1707143111073" class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
                             <div class="flex items-center">
                                 <span v-for="avatar in state.avatars">
-                                    <img :src="`/src/assets/avatars/${avatar.id}`" :alt="avatar.name" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" :width="state.player.avatar === avatar.id ? 64 : 32" @click="state.player.avatar = avatar.id" />
+                                    <img :src="avatar.id" :alt="avatar.name" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" :width="state.player.avatar === avatar.name ? 64 : 32" @click="state.player.avatar = avatar.name" />
                                 </span>
                             </div>
                         </div>

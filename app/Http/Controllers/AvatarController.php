@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+
 class AvatarController extends Controller
 {
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(): JsonResponse
     {
         $avatars = [];
 
         foreach (config('avatars.avatars') as $item) {
             $avatars[] = [
-                'id' => $item,
+                'id' => url("storage/avatars/{$item}"),
                 'name' => $item,
             ];
         }

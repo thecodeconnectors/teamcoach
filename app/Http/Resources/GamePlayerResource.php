@@ -15,6 +15,7 @@ class GamePlayerResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'avatar' => $this->avatar,
+            'profile_picture' => $this->profile_picture,
             'type' => $this->pivot->type,
             'position' => $this->pivot->position,
             'playtime' => round($this->playTimeForGame($this->pivot->game_id) / 60),

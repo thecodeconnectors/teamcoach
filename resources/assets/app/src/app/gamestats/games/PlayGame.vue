@@ -41,7 +41,7 @@
                             <tr v-for="player in state.game.playing" :key="player.id" :value="player.id">
                                 <td>
                                     <span class="w-full flex items-left items-center">
-                                        <img :src="`/src/assets/avatars/${player.avatar}`" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" />
+                                        <img :src="player.profile_picture" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" />
                                         <span>{{ player.name }}</span>
                                     </span>
                                 </td>
@@ -64,7 +64,7 @@
                             <tr v-for="player in state.game.substitutes" :key="player.id" :value="player.id">
                                 <td>
                                     <span class="w-full flex items-left items-center">
-                                        <img :src="`/src/assets/avatars/${player.avatar}`" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow-md" />
+                                        <img :src="player.profile_picture" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow-md" />
                                         <span>{{ player.name }}</span>
                                     </span>
                                 </td>
