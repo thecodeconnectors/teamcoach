@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
+use App\Http\Resources\UserResource;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,15 +13,17 @@ class RedirectIfAuthenticated
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
-    public function handle(Request $request, Closure $next, string ...$guards): Response
+    public function handle(Request $request, Closure $next, string ...$guards): UserResource|Response
     {
+
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return new UserResource($request->user());
+                //return redirect(RouteServiceProvider::HOME);
             }
         }
 

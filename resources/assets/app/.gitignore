@@ -1,0 +1,7 @@
+node_modules
+.npm
+.env
+dist
+e2e-tests/test-results
+e2e-tests/report
+e2e-tests/tmp

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Str;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +27,11 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function shouldReturnJson($request, Throwable $e): bool
+    {
+        return $request->expectsJson()
+            || Str::startsWith($request->path(), 'api');
     }
 }
