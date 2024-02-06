@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import {nextTick} from 'vue';
 import {useStore} from '@/framework/store/index.js';
 import {getUser, startSession} from '@/framework/components/auth/auth.api.js';
+import {getSettings} from '@/app/settings/settings.api.js';
 
 export default async function configureRouter() {
 
@@ -24,6 +25,11 @@ export default async function configureRouter() {
 
         store.errors = null;
         store.flashMessage = null;
+
+        if (!store.settings) {
+            const {data: settings} = await getSettings();
+            store.setSettings(settings);
+        }
 
         if (!store.sessionStarted) {
             await startSession().then(async () => {
