@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Game;
 use Database\Factories\GameFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -59,4 +60,39 @@ class GameTest extends TestCase
         $this->assertTrue($game->fresh()->isPaused());
     }
 
+    public function testGameIsNotPublic(): void
+    {
+        /** @var Game $game */
+        $game = GameFactory::new()->create();
+
+        $this->assertFalse($game->isPublic());
+        $this->assertNull($game->url_secret);
+        $this->assertNull($game->public_url);
+    }
+
+    public function testGameIsPublic(): void
+    {
+        /** @var Game $game */
+        $game = GameFactory::new()->create();
+
+        $game->makePublic();
+
+        $this->assertTrue($game->isPublic());
+        $this->assertNotNull($game->url_secret);
+        $this->assertNotNull($game->public_url);
+        $this->assertStringContainsString($game->url_secret, $game->public_url);
+    }
+
+    public function testGameIsPrivate(): void
+    {
+        /** @var Game $game */
+        $game = GameFactory::new()->create();
+
+        $game->makePublic();
+        $game->makePrivate();
+
+        $this->assertFalse($game->isPublic());
+        $this->assertNull($game->url_secret);
+        $this->assertNull($game->public_url);
+    }
 }

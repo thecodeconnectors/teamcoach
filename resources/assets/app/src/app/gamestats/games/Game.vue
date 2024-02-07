@@ -72,7 +72,7 @@ import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
-import {computed, onMounted, reactive} from 'vue';
+import {computed, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import {getTeams} from '@/app/gamestats/teams/teams.api.js';
@@ -155,13 +155,11 @@ const deleteCurrentGame = async () => {
     await router.push({name: 'games'});
 };
 
-onMounted(() => {
-    loadTeams();
-    loadPositions();
-    loadGamePlayerTypes();
+loadTeams();
+loadPositions();
+loadGamePlayerTypes();
 
-    if (isEditForm.value) {
-        getGameById(props.id);
-    }
-});
+if (isEditForm.value) {
+    getGameById(props.id);
+}
 </script>

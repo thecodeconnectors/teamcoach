@@ -21,7 +21,7 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import {reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {useDataTable} from '@/framework/components/composables/table.js';
@@ -30,78 +30,60 @@ import Search from '@/framework/components/common/search/Search.vue';
 import ButtonLink from '@/framework/components/common/button-link/ButtonLink.vue';
 import CustomTable from '@/framework/components/common/table/CustomTable.vue';
 
-export default {
-    name: 'Games',
-    components: {CustomTable, ButtonLink, Search},
-    setup() {
-        const router = useRouter();
-        const table = reactive({
-            isLoading: false,
-            columns: [
-                {
-                    field: 'opponent_name',
-                    label: 'Opponent',
-                    sortable: true,
-                },
-                {
-                    field: 'start_at',
-                    label: 'Date',
-                    sortable: true,
-                },
-            ],
-            rows: [],
-            totalCount: 0,
-            pagination: {
-                page: 1,
-                per_page: 15,
-            },
-            sorting: {
-                orderBy: 'name',
-                sortDirection: 'asc',
-            },
-            interactive: true,
-        });
-
-        const {getData, searchData} = useDataTable(table);
-
-        const fetchData = async params => {
-            table.isLoading = true;
-            try {
-
-                const {data: games, meta: {total, page, per_page}} = await getGames(params);
-
-                table.rows = games;
-                table.totalCount = total;
-                table.pagination = {
-                    page,
-                    per_page,
-                };
-            } catch (error) {
-                console.error(error);
-            } finally {
-                table.isLoading = false;
-            }
-        };
-
-        const navigateTo = (game) => {
-            if (game.started_at) {
-                router.push(`/games/${game.id}/play`);
-            } else {
-                router.push(`/games/${game.id}`);
-            }
-        };
-
-        const doFetch = params => getData(fetchData, params);
-        const doSearch = query => searchData(fetchData, query);
-
-        fetchData();
-
-        return {
-            table,
-            doFetch,
-            doSearch,
-            navigateTo,
-        };
+const router = useRouter();
+const table = reactive({
+    isLoading: false,
+    columns: [
+        {
+            field: 'opponent_name',
+            label: 'Opponent',
+            sortable: true,
+        },
+        {
+            field: 'start_at',
+            label: 'Date',
+            sortable: true,
+        },
+    ],
+    rows: [],
+    totalCount: 0,
+    pagination: {
+        page: 1,
+        per_page: 15,
     },
+    sorting: {
+        orderBy: 'name',
+        sortDirection: 'asc',
+    },
+    interactive: true,
+});
+
+const {getData, searchData} = useDataTable(table);
+
+const fetchData = async (params) => {
+    table.isLoading = true;
+    try {
+        const {data: games, meta: {total, page, per_page}} = await getGames(params);
+        table.rows = games;
+        table.totalCount = total;
+        table.pagination = {page, per_page};
+    } catch (error) {
+        console.error(error);
+    } finally {
+        table.isLoading = false;
+    }
 };
+
+const navigateTo = (game) => {
+    if (game.started_at) {
+        router.push(`/games/${game.id}/play`);
+    } else {
+        router.push(`/games/${game.id}`);
+    }
+};
+
+const doFetch = (params) => getData(fetchData, params);
+const doSearch = (query) => searchData(fetchData, query);
+
+fetchData();
 </script>

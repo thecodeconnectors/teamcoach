@@ -278,7 +278,7 @@ class GamePlayerAndSubstituteTest extends TestCase
         $game->addPlayer($player);
         $game->addSubstitute($player);
 
-        $this->assertDatabaseCount(Event::class, 1);
+        $this->assertDatabaseCount(Event::class, 2);
 
         $this->assertDatabaseHas(Event::class, [
             'type' => EventType::PlayTime->value,
@@ -287,6 +287,15 @@ class GamePlayerAndSubstituteTest extends TestCase
             'team_id' => $player->team_id,
             'started_at' => TestCase::$now,
             'finished_at' => TestCase::$now,
+        ]);
+
+        $this->assertDatabaseHas(Event::class, [
+            'type' => EventType::Substituted->value,
+            'game_id' => $game->id,
+            'player_id' => $player->id,
+            'team_id' => $player->team_id,
+            'started_at' => TestCase::$now,
+            'finished_at' => null,
         ]);
     }
 

@@ -35,109 +35,82 @@
     <Confirm @confirm="deleteUser" @cancel="showConfirmDelete = false" :open="showConfirmDelete" />
 </template>
 
-<script>
-import {deleteUser, getUser, storeUser, updateUser} from './users.api';
+<script setup>
+import {computed, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {useStore} from '@/framework/store';
+import {deleteUser, getUser, storeUser, updateUser} from './users.api';
 import {findImageFromCollection} from '@/framework/helpers.js';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
-import SidebarPanel from '@/framework/components/common/panels/SidebarPanel.vue';
-import MediaUpload from '@/framework/components/common/form/MediaUpload.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
-import Checkbox from '@/framework/components/common/form/Checkbox.vue';
-import SlugField from '@/framework/components/common/form/SlugField.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
 
-export default {
-    name: 'User',
-    components: {InputField, SlugField, Checkbox, InputButton, MediaUpload, SidebarPanel, Confirm},
-    props: {
-        id: {
-            type: [Number, String],
-            required: false,
-        },
+const props = defineProps({
+    id: {
+        type: [Number, String],
+        required: false,
     },
-    data() {
-        return {
-            user: {
-                name: null,
-                email: null,
-                facebook: null,
-                instagram: null,
-                twitter: null,
-                tiktok: null,
-                snapchat: null,
-                linkedin: null,
-                password: null,
-                show_on_frontend: null,
-                include_in_reports: null,
-                password_confirmation: null,
-                profile_picture: {},
-            },
-            isLoading: false,
-            showConfirmDelete: false,
-        };
-    },
-    computed: {
-        title() {
-            return this.isEditForm ? 'Edit User' : 'New User';
-        },
+});
 
-        isEditForm() {
-            const router = useRouter();
-            return router.currentRoute.value.name === 'users.edit';
-        },
+const user = ref({
+    name: null,
+    email: null,
+    facebook: null,
+    instagram: null,
+    twitter: null,
+    tiktok: null,
+    snapchat: null,
+    linkedin: null,
+    password: null,
+    show_on_frontend: null,
+    include_in_reports: null,
+    password_confirmation: null,
+    profile_picture: {},
+});
+const isLoading = ref(false);
+const showConfirmDelete = ref(false);
+const router = useRouter();
+const store = useStore();
 
-        profilePicture() {
-            return findImageFromCollection(this.user.media, 'profile_picture');
-        },
+const isEditForm = computed(() => router.currentRoute.value.name === 'users.edit');
+const title = computed(() => isEditForm.value ? 'Edit User' : 'New User');
+const profilePicture = computed(() => findImageFromCollection(user.value.media, 'profile_picture'));
+const hasProfilePicture = computed(() => !!profilePicture.value?.id);
 
-        hasProfilePicture() {
-            return this.profilePicture?.id;
-        },
-    },
-    methods: {
-        async getUser(id) {
-            const {data: user} = await getUser(id);
-            this.user = user;
-            this.isLoading = false;
-        },
-        async saveUser() {
-            this.isLoading = true;
-            await (this.isEditForm ? updateUser(this.id, this.user) : storeUser(this.user)).catch(() => {
-                this.isLoading = false;
-            }).then((response) => {
-                if (response) {
-                    this.user = response.data;
-                    this.isLoading = false;
-
-                    const store = useStore();
-                    const router = useRouter();
-                    store.addToastMessage({title: 'User saved'});
-
-                    if (!this.isEditForm) {
-                        router.push({name: 'users.edit', params: {id: this.user.id}});
-                    }
-                }
-            });
-        },
-        async deleteUser() {
-            await deleteUser(this.user.id).then(() => {
-                const store = useStore();
-                const router = useRouter();
-                store.addToastMessage({title: 'User deleted'});
-                router.push({name: 'users'});
-            });
-        },
-        onUploadedFile(media) {
-            this.user.profile_picture = media;
-        },
-    },
-    mounted() {
-        if (this.isEditForm) {
-            this.getUser(this.id);
-        }
-        this.isLoading = false;
-    },
+const fetchUser = async (id) => {
+    isLoading.value = true;
+    const {data: userData} = await getUser(id);
+    user.value = userData;
+    isLoading.value = false;
 };
+
+const saveUser = async () => {
+    isLoading.value = true;
+    try {
+        const response = await (isEditForm.value ? updateUser(props.id, user.value) : storeUser(user.value));
+        user.value = response.data;
+        store.addToastMessage({title: 'User saved'});
+        if (!isEditForm.value) {
+            router.push({name: 'users.edit', params: {id: user.value.id}});
+        }
+    } catch (error) {
+        console.error(error);
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const performDeleteUser = async () => {
+    await deleteUser(user.value.id);
+    store.addToastMessage({title: 'User deleted'});
+    router.push({name: 'users'});
+};
+
+const onUploadedFile = (media) => {
+    user.value.profile_picture = media;
+};
+
+if (isEditForm.value) {
+    fetchUser(props.id);
+}
 </script>

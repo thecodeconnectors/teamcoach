@@ -16,6 +16,7 @@ class GameResource extends JsonResource
             'team_id' => $this->team_id,
             'opponent_id' => $this->opponent_id,
             'opponent_name' => $this->opponent->name,
+            'public_url' => $this->public_url,
             'start_at' => $this->start_at?->format('Y-m-d H:i:s'),
             'started_at' => $this->started_at?->format('Y-m-d H:i:s'),
             'finished_at' => $this->finished_at?->format('Y-m-d H:i:s'),

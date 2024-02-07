@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
  * @property int $team_id
  * @property int $opponent_id
+ * @property null|string $url_secret
  * @property int $team_points
  * @property int $opponent_points
  * @property Team $team
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
  *
+ * @property ?string $public_url
  * @property int $seconds_elapsed
  * @property string $time_elapsed
  */
@@ -95,7 +98,16 @@ class Game extends Model
 
     public function getTimeElapsedAttribute(): string
     {
-        return sprintf('%d:%d:%d', round($this->seconds_elapsed / 3600 / 60), $this->seconds_elapsed / 3600, round($this->seconds_elapsed / 60) % 60);
+        $hours = str_pad(intdiv($this->seconds_elapsed, 3600), 2, '0', STR_PAD_LEFT);
+        $minutes = str_pad(intdiv($this->seconds_elapsed % 3600, 60), 2, '0', STR_PAD_LEFT);
+        $seconds = str_pad($this->seconds_elapsed % 60, 2, '0', STR_PAD_LEFT);
+
+        return $hours !== '00' ? "{$hours}:{$minutes}:{$seconds}" : "{$minutes}:{$seconds}";
+    }
+
+    public function getPublicUrlAttribute(): ?string
+    {
+        return $this->url_secret ? frontendUrl("games/$this->url_secret") : null;
     }
 
     public function pausedEvent(): null|Event|Model
@@ -127,6 +139,8 @@ class Game extends Model
 
         $this->startPlayerTimers($dateTime);
 
+        $this->load('events');
+
         return $this;
     }
 
@@ -140,6 +154,8 @@ class Game extends Model
 
         $this->finishPlayerTimers($dateTime);
 
+        $this->load('events');
+
         return $this;
     }
 
@@ -152,6 +168,8 @@ class Game extends Model
 
         $this->finishPlayerTimers($dateTime);
 
+        $this->load('events');
+
         return $this;
     }
 
@@ -162,6 +180,8 @@ class Game extends Model
         }
 
         $this->startPlayerTimers($dateTime);
+
+        $this->load('events');
 
         return $this;
     }
@@ -184,6 +204,11 @@ class Game extends Model
     public function isPaused(): bool
     {
         return !is_null($this->pausedEvent());
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->url_secret !== null;
     }
 
     /**
@@ -324,4 +349,17 @@ class Game extends Model
             ]);
     }
 
+    public function makePublic(): static
+    {
+        $this->update(['url_secret' => Str::uuid() . '-' . Str::uuid()]);
+
+        return $this;
+    }
+
+    public function makePrivate(): static
+    {
+        $this->update(['url_secret' => null]);
+
+        return $this;
+    }
 }

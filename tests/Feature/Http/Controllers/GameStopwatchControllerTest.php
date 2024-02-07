@@ -35,6 +35,8 @@ class GameStopwatchControllerTest extends TestCase
     {
         $game = GameFactory::new()->create();
 
+        $game->start(TestCase::$now);
+        
         $payload = [
             'date_time' => $dateTime = now()->subMinutes(10)->format('Y-m-d H:i:s'),
         ];
@@ -50,19 +52,18 @@ class GameStopwatchControllerTest extends TestCase
     public function testItPausesAGame(): void
     {
         $game = GameFactory::new()->create();
-
-        $dateTime = now()->format('Y-m-d H:i:s');
+        $game->start(TestCase::$now);
 
         $this
             ->actingAs($this->user())->post("api/games/{$game->id}/pause", [
-                'date_time' => $dateTime,
+                'date_time' => TestCase::$now,
             ])
             ->assertStatus(Response::HTTP_OK);
 
         $this->assertDatabaseHas(Event::class, [
             'type' => EventType::GameBreak->value,
             'game_id' => $game->id,
-            'started_at' => now(),
+            'started_at' => TestCase::$now,
         ]);
     }
 

@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignIdFor(Team::class, 'opponent_id');
             $table->unsignedInteger('team_points')->default(0);
             $table->unsignedInteger('opponent_points')->default(0);
+            $table->string('url_secret', 255)->nullable();
             $table->timestamp('start_at');
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();

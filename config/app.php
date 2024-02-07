@@ -57,6 +57,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'frontend_url' => env('APP_FRONTEND_URL', 'https://app.teamstats.test:4000/'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*

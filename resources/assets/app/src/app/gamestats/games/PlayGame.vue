@@ -1,56 +1,65 @@
 <template>
-    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8">
-        <h1 class="text-2xl font-semibold text-gray-900">{{ title }}</h1>
+    <div class="max-w-full grid grid-cols-4 mx-auto px-4 sm:px-6 md:px-8">
+        <h1 class="col-span-2 text-2xl text-gray-900">{{ title }}</h1>
+        <div class="col-span-2 text-right">
+            <span v-if="state.game.is_playing" class="uppercase text-xs tracking-widest text-white bg-red-500 py-1 px-3 rounded-full">
+                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Live
+            </span>
+            <span v-if="state.game.is_paused" class="uppercase text-xs tracking-widest text-white bg-green-500 py-1 px-3 rounded-full ml-3">
+                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Paused
+            </span>
+            <span v-if="state.game.is_finished" class="uppercase text-xs tracking-widest text-white bg-blue-500 py-1 px-3 rounded-full ml-3">
+                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Finished
+            </span>
+        </div>
     </div>
     <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:grid-cols-12 lg:gap-8">
         <main class="col-span-12">
-            <div class="shadow sm:rounded-md sm:overflow-hidden">
+            <div class="lg:shadow rounded-md sm:overflow-hidden">
                 <div class="pb-6 bg-white space-y-6">
-                    <div class="grid grid-cols-12 w-full align-middle text-white bg-gray-600">
-                        <div class="col-span-4 p-3 flex items-center justify-center font-bold text-xl">
+                    <div class="grid grid-cols-12 w-full align-middle text-white bg-blue-500 rounded-md lg:rounded-none">
+                        <div class="col-span-4 p-3 flex items-center justify-center text-xl">
                             {{ state.game.team_name }}
                         </div>
-                        <div class="col-span-4 p-3 text-center bg-gray-800 text-white">
-                            <span class="font-bold text-2xl">{{ state.game.team_points }}</span>
+                        <div class="col-span-4 p-3 text-center bg-blue-600 text-white">
+                            <span class="text-2xl">{{ state.game.team_points }}</span>
                             <span class="px-3">-</span>
-                            <span class="font-bold text-2xl">{{ state.game.opponent_points }}</span>
+                            <span class="text-2xl">{{ state.game.opponent_points }}</span>
                         </div>
-                        <div class="col-span-4 p-3 flex items-center justify-center text-right font-bold text-xl">
+                        <div class="col-span-4 p-3 flex items-center justify-center text-right text-xl">
                             {{ state.game.opponent_name }}
                         </div>
                     </div>
                     <div class="grid grid-cols-12 w-full align-middle">
                         <div class="col-span-12 text-center">
-                            <span class="w-full text-white bg-blue-500 shadow rounded-2xl py-3 px-6">
-                                {{ state.game.time_elapsed }}
+                            <span class="w-full text-white bg-blue-500 shadow rounded-md py-3 px-6">
+                                <LiveSecondsToTimeString :enabled="state.timersEnabled" :seconds="state.game.seconds_elapsed" />
                             </span>
                         </div>
                     </div>
                 </div>
-                <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                <div class="bg-white space-y-6 lg:p-6">
                     <div class="sm:col-span-6">
-                        <table class="w-full">
+                        <table class="w-full text-gray-600">
                             <thead>
                             <tr>
-                                <th class="text-left">Players</th>
-                                <th class="text-right">Playtime</th>
-                                <th></th>
+                                <th colspan="3" class="py-2 text-left font-normal text-gray-800 bg-gray-50">Players</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="player in state.game.playing" :key="player.id" :value="player.id">
-                                <td>
+                                <td class="py-2">
                                     <span class="w-full flex items-left items-center">
-                                        <img :src="player.profile_picture" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" />
-                                        <span>{{ player.name }}</span>
+                                        <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
+                                         <span class="ml-1">{{ player.name }}</span>
                                     </span>
                                 </td>
                                 <td class="text-right">
-                                    {{ player.playtime }}"
+                                    <LiveSecondsToTimeString :enabled="state.timersEnabled" :seconds="player.playtime" class="text-xs" />
                                 </td>
                                 <td class="text-right object-right">
-                                    <Icon name="refresh" @click="openSubstiteMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1 mr-3" />
-                                    <Icon name="chart-line" @click="openPlayerMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1" />
+                                    <Icon name="refresh" @click="openSubstiteMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
+                                    <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
                                 </td>
                             </tr>
                             </tbody>
@@ -59,20 +68,20 @@
                                 <td colspan="3">&nbsp;</td>
                             </tr>
                             <tr>
-                                <th colspan="3" class="text-left">Substitutes</th>
+                                <th colspan="3" class="py-2 text-left font-normal text-gray-800 bg-gray-50">Substitutes</th>
                             </tr>
                             <tr v-for="player in state.game.substitutes" :key="player.id" :value="player.id">
-                                <td>
+                                <td class="py-2">
                                     <span class="w-full flex items-left items-center">
-                                        <img :src="player.profile_picture" :alt="player.name" width="32" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow-md" />
-                                        <span>{{ player.name }}</span>
+                                        <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
+                                        <span class="ml-1">{{ player.name }}</span>
                                     </span>
                                 </td>
                                 <td class="text-right">
-                                    {{ player.playtime }}"
+                                    <LiveSecondsToTimeString :enabled="false" :seconds="player.playtime" class="text-xs" />
                                 </td>
                                 <td class="text-right object-right">
-                                    <Icon name="chart-line" @click="openPlayerMenu(player)" size="sm" class="rounded-full border-blue-600 text-blue-600 border-2 shadow-md p-1" />
+                                    <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
                                 </td>
                             </tr>
                             </tfoot>
@@ -219,7 +228,7 @@
         </div>
     </SlideOver>
 
-    <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow">
+    <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
         <div class="col-span-3 p-3 text-center">
             <Icon class="h-8 w-8 " name="user" />
         </div>
@@ -244,7 +253,7 @@ import {useRouter} from 'vue-router';
 import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
-import {computed, onMounted, reactive} from 'vue';
+import {computed, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import Icon from '@/framework/components/common/icon/Icon.vue';
 import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
@@ -252,6 +261,8 @@ import {getPlayerActionEventTypes} from '@/app/gamestats/player-action-event-typ
 import {storeEvent} from '@/app/gamestats/events/events.api.js';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 import EventListItem from '@/app/gamestats/events/EventListItem.vue';
+import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
+import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -265,6 +276,7 @@ const props = defineProps({
 
 const state = reactive({
     isLoading: false,
+    timersEnabled: false,
     showConfirmStart: false,
     showConfirmFinish: false,
     showConfirmPause: false,
@@ -326,27 +338,29 @@ const getGame = async (id) => {
     const {data: game} = await getGamePlay(id);
     state.game = game;
     state.isLoading = false;
-    startTimer();
+    if (state.game.is_playing && !state.game.is_paused) {
+        startTimers();
+    }
 };
 
 const start = async () => {
     await control(startGame, 'Game started', 'showConfirmStart');
-    startTimer();
+    startTimers();
 };
 
 const pause = async () => {
     await control(pauseGame, 'Game paused', 'showConfirmPause');
-    stopTimer();
+    stopTimers();
 };
 
 const resume = async () => {
     await control(resumeGame, 'Game resumed', 'showConfirmResume');
-    startTimer();
+    startTimers();
 };
 
 const finish = async () => {
     await control(finishGame, 'Game finished', 'showConfirmFinish');
-    stopTimer();
+    stopTimers();
 };
 
 const control = async (method, message, confirmDialog) => {
@@ -383,32 +397,15 @@ const addPlayerEvent = async () => {
     // todo reload events
 };
 
-let timer = null;
-
-const startTimer = () => {
-    const d = new Date();
-    d.setHours(0);
-    d.setMinutes(0);
-    d.setSeconds(state.game.seconds_elapsed, 0);
-    timer = setInterval(function () {
-        if (state.game.is_playing && !state.game.is_paused) {
-            const hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
-            const minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
-            const seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
-            state.game.time_elapsed = hours + ':' + minutes + ':' + seconds;
-        }
-        d.setTime(d.getTime() + 500);
-    }, 500);
+const startTimers = () => {
+    state.timersEnabled = true;
 };
 
-const stopTimer = () => {
-    clearInterval(timer);
+const stopTimers = () => {
+    state.timersEnabled = false;
 };
-
-onMounted(() => {
-    getGame(props.id);
-    loadPositions();
-    loadGamePlayerTypes();
-    loadPlayerActionEventTypes();
-});
+getGame(props.id);
+loadPositions();
+loadGamePlayerTypes();
+loadPlayerActionEventTypes();
 </script>

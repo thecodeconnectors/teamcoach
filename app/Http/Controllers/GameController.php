@@ -73,4 +73,19 @@ class GameController extends Controller
 
         return response()->noContent();
     }
+
+    public function makePublic(Game $game): GameResource
+    {
+        $game->makePublic();
+
+        return new GameResource($game);
+    }
+
+    public function makePrivate(Game $game): GameResource
+    {
+        $game->makePrivate();
+
+        return new GameResource($game);
+    }
+
 }

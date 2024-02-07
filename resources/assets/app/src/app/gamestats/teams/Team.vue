@@ -30,7 +30,7 @@ import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
-import {computed, onMounted, ref} from 'vue';
+import {computed, ref} from 'vue';
 
 const store = useStore();
 const router = useRouter();
@@ -86,10 +86,8 @@ const deleteCurrentTeam = async () => {
     await router.push({name: 'teams'});
 };
 
-onMounted(() => {
-    if (isEditForm.value) {
-        id.value = props.id;
-        getTeamById(id.value);
-    }
-});
+if (isEditForm.value) {
+    id.value = props.id;
+    getTeamById(id.value);
+}
 </script>
