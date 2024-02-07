@@ -2,45 +2,18 @@
     <div class="max-w-full grid grid-cols-4 mx-auto px-4 sm:px-6 md:px-8">
         <h1 class="col-span-2 text-2xl text-gray-900">{{ title }}</h1>
         <div class="col-span-2 text-right pt-1">
-            <span v-if="!state.game.is_started" class="text-xs tracking-widest py-1">
-                Starts at {{ formatDate(state.game.start_at) }}
-            </span>
-            <span v-if="state.game.is_playing" class="uppercase text-xs tracking-widest text-white bg-red-500 py-1 px-3 rounded-full">
-                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Live
-            </span>
-            <span v-if="state.game.is_paused" class="uppercase text-xs tracking-widest text-white bg-green-500 py-1 px-3 rounded-full ml-3">
-                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Paused
-            </span>
-            <span v-if="state.game.is_finished" class="uppercase text-xs tracking-widest text-white bg-blue-500 py-1 px-3 rounded-full ml-3">
-                <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Finished
+            <StatusBadges :game="state.game" />
+            <span v-if="state.game.is_public" class="text-xs tracking-widest py-1">
+                <button @click="openPublicGame" class="p-2">
+                    <Icon name="external-link" />
+                </button>
             </span>
         </div>
     </div>
     <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:grid-cols-12 lg:gap-8">
         <main class="col-span-12">
             <div class="lg:shadow rounded-md sm:overflow-hidden">
-                <div class="pb-6 bg-white space-y-6">
-                    <div class="grid grid-cols-12 w-full align-middle text-white bg-blue-500 rounded-md lg:rounded-none">
-                        <div class="col-span-4 p-3 flex items-center justify-center text-xl">
-                            {{ state.game.team_name }}
-                        </div>
-                        <div class="col-span-4 p-3 text-center bg-blue-600 text-white">
-                            <span class="text-2xl">{{ state.game.team_points }}</span>
-                            <span class="px-3">-</span>
-                            <span class="text-2xl">{{ state.game.opponent_points }}</span>
-                        </div>
-                        <div class="col-span-4 p-3 flex items-center justify-center text-right text-xl">
-                            {{ state.game.opponent_name }}
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-12 w-full align-middle">
-                        <div class="col-span-12 text-center">
-                            <span class="w-full text-white bg-blue-500 shadow rounded-md py-3 px-6">
-                                <LiveSecondsToTimeString :enabled="state.timersEnabled" :seconds="state.game.seconds_elapsed" />
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
                 <div class="bg-white space-y-6 lg:p-6">
                     <div class="sm:col-span-6">
                         <table class="w-full text-gray-600">
@@ -128,6 +101,24 @@
         text="Are you sure you want to finish the game?"
         confirmButtonText="Finish game!"
     />
+
+    <Confirm
+        @confirm="publish"
+        @cancel="state.showConfirmPublish = false"
+        :open="state.showConfirmPublish"
+        title="Publish game"
+        text="Are you sure you want to publish the game?"
+        confirmButtonText="Publish game!"
+    />
+    <Confirm
+        @confirm="unpublish"
+        @cancel="state.showConfirmUnpublish = false"
+        :open="state.showConfirmUnpublish"
+        title="Unpublish game"
+        text="Are you sure you want to unpublish the game?"
+        confirmButtonText="Unpublish game!"
+    />
+
     <SlideOver :title="`Substitute player ${state.substitutePlayer?.name}`"
                :open="state.substitutePlayer !== null"
                @close="state.substitutePlayer = null;state.newPlayer = null"
@@ -235,7 +226,8 @@
 
     <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
         <div class="col-span-3 p-3 text-center">
-            <Icon class="h-8 w-8 " name="user" />
+            <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
+            <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
         </div>
         <div class="col-span-3 p-3 text-center align-middle">
             <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
@@ -253,7 +245,7 @@
     </div>
 </template>
 <script setup>
-import {finishGame, getGamePlay, getGamePlayerTypes, pauseGame, resumeGame, startGame, swtichPlayers} from './games.api.js';
+import {finishGame, getGamePlay, getGamePlayerTypes, pauseGame, publishGame, resumeGame, startGame, swtichPlayers, unpublishGame} from './games.api.js';
 import {useRouter} from 'vue-router';
 import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
@@ -269,7 +261,8 @@ import EventListItem from '@/app/gamestats/events/EventListItem.vue';
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
 import Goals from '@/app/gamestats/Goals.vue';
-import {formatDate} from '../../../framework/helpers.js';
+import StatusBadges from '@/app/gamestats/games/includes/StatusBadges.vue';
+import ScoreBoard from '@/app/gamestats/games/includes/ScoreBoard.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -290,6 +283,8 @@ const state = reactive({
     showConfirmResume: false,
     showAddGameEvent: false,
     showGameEvents: false,
+    showConfirmPublish: false,
+    showConfirmUnpublish: false,
     substitutePlayer: null,
     newPlayer: null,
     focusPlayer: null,
@@ -302,6 +297,7 @@ const state = reactive({
         team_name: null,
         opponent_id: null,
         opponent_name: null,
+        url_secret: null,
 
         team_points: 0,
         opponent_points: 0,
@@ -317,6 +313,7 @@ const state = reactive({
         is_paused: false,
         is_playing: false,
         is_finished: false,
+        is_public: false,
 
         playing: [],
         substitutes: [],
@@ -370,11 +367,34 @@ const finish = async () => {
     stopTimers();
 };
 
+const publish = async () => {
+    state.isLoading = true;
+    const {data: game} = await publishGame(state.game.id);
+    state.game = game;
+    state.isLoading = false;
+    state.showConfirmPublish = false;
+    store.addToastMessage({title: 'Game published'});
+};
+
+const unpublish = async () => {
+    state.isLoading = true;
+    const {data: game} = await unpublishGame(state.game.id);
+    state.game = game;
+    state.isLoading = false;
+    state.showConfirmUnpublish = false;
+    store.addToastMessage({title: 'Game Unpublished'});
+};
+
 const control = async (method, message, confirmDialog) => {
     const {data: game} = await method(state.game.id);
     state.game = reactive(game);
     store.addToastMessage({title: message});
     state[confirmDialog] = false;
+};
+
+const openPublicGame = () => {
+    const url = `/games/public/${state.game.url_secret}`;
+    window.open(url, '_blank');
 };
 
 const openSubstiteMenu = (player) => {

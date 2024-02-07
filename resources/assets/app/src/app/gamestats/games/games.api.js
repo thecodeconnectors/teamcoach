@@ -51,6 +51,18 @@ export function finishGame(id) {
     return api.post(`games/${id}/finish`);
 }
 
+export function publishGame(id) {
+    return api.post(`games/${id}/publish`);
+}
+
+export function unpublishGame(id) {
+    return api.post(`games/${id}/unpublish`);
+}
+
+export function showPublicGame(urlSecret) {
+    return api.get(`games/public/${urlSecret}`);
+}
+
 export function swtichPlayers(gameId, playerId, substituteId) {
     return api.post(`games/${gameId}/switch-player`, {
         player_id: playerId,

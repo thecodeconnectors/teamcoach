@@ -36,7 +36,7 @@ class GameStopwatchControllerTest extends TestCase
         $game = GameFactory::new()->create();
 
         $game->start(TestCase::$now);
-        
+
         $payload = [
             'date_time' => $dateTime = now()->subMinutes(10)->format('Y-m-d H:i:s'),
         ];

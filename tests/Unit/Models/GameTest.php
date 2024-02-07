@@ -65,7 +65,7 @@ class GameTest extends TestCase
         /** @var Game $game */
         $game = GameFactory::new()->create();
 
-        $this->assertFalse($game->isPublic());
+        $this->assertFalse($game->is_public);
         $this->assertNull($game->url_secret);
         $this->assertNull($game->public_url);
     }
@@ -77,7 +77,7 @@ class GameTest extends TestCase
 
         $game->makePublic();
 
-        $this->assertTrue($game->isPublic());
+        $this->assertTrue($game->is_public);
         $this->assertNotNull($game->url_secret);
         $this->assertNotNull($game->public_url);
         $this->assertStringContainsString($game->url_secret, $game->public_url);
@@ -91,8 +91,9 @@ class GameTest extends TestCase
         $game->makePublic();
         $game->makePrivate();
 
-        $this->assertFalse($game->isPublic());
-        $this->assertNull($game->url_secret);
-        $this->assertNull($game->public_url);
+        $this->assertFalse($game->is_public);
+        $this->assertNotNull($game->url_secret);
+        $this->assertNotNull($game->public_url);
+        $this->assertStringContainsString($game->url_secret, $game->public_url);
     }
 }

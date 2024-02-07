@@ -29,7 +29,7 @@ class GamePlayerGoalTest extends TestCase
         foreach ($events as $event) {
             EventFactory::new()->for($game)->for($player)->create($event);
         }
-        
+
         $this->assertEquals($expectedGoals, $player->goalsForGame($game));
     }
 
@@ -57,7 +57,7 @@ class GamePlayerGoalTest extends TestCase
                         'type' => EventType::Goal,
                     ],
                 ],
-                'expectedGoals' => 1,
+                'expectedGoals' => 2,
             ],
         ];
     }

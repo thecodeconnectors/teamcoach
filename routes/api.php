@@ -7,6 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GamePlayController;
 use App\Http\Controllers\GamePlayerTypeController;
+use App\Http\Controllers\GamePublishController;
 use App\Http\Controllers\GameStopwatchController;
 use App\Http\Controllers\PlayerActionEventTypeController;
 use App\Http\Controllers\PlayerController;
@@ -33,6 +34,11 @@ Route::get('avatars', [AvatarController::class, 'index']);
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('game-player-types', [GamePlayerTypeController::class, 'index']);
 Route::get('player-action-event-types', [PlayerActionEventTypeController::class, 'index']);
+
+Route::get('games/public/{url_secret}', [GamePublishController::class, 'show']);
+
+Route::post('games/{game}/publish', [GamePublishController::class, 'publish']);
+Route::post('games/{game}/unpublish', [GamePublishController::class, 'unpublish']);
 
 Route::get('games/{game}/play', [GamePlayController::class, 'show']);
 Route::post('games/{game}/switch-player', [GamePlayController::class, 'switch']);

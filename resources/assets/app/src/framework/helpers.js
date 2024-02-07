@@ -39,8 +39,16 @@ export function bytesToSize(bytes) {
 export function formatDate(date) {
     if (date) {
         const d = new Date(date);
-        date    = d.toLocaleString('nl-NL', {year: '2-digit', month: 'numeric', day: 'numeric'})
+        date = d.toLocaleString('nl-NL', {year: '2-digit', month: 'numeric', day: 'numeric'})
             + ' ' + d.toLocaleTimeString('nl-NL', {hour12: false, hour: '2-digit', minute: '2-digit'});
+    }
+    return date;
+}
+
+export function formatTime(date) {
+    if (date) {
+        const d = new Date(date);
+        date = d.toLocaleTimeString('nl-NL', {hour12: false, hour: '2-digit', minute: '2-digit'});
     }
     return date;
 }

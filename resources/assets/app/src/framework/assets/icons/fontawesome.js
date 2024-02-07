@@ -24,6 +24,7 @@ import {
     faEdit,
     faEnvelope,
     faExclamationCircle,
+    faExternalLink,
     faExternalLinkSquareAlt,
     faFile,
     faFlagCheckered,
@@ -133,5 +134,6 @@ library.add(
     faPause,
     faRotate,
     faCirclePlay,
-    faFlagCheckered
+    faFlagCheckered,
+    faExternalLink,
 );

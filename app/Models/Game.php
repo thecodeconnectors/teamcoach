@@ -18,7 +18,10 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property int $team_id
  * @property int $opponent_id
+ * @property bool $is_public
  * @property null|string $url_secret
+ * @property int $parts
+ * @property int $part_duration
  * @property int $team_points
  * @property int $opponent_points
  * @property Team $team
@@ -45,6 +48,7 @@ class Game extends Model
         'start_at' => 'datetime',
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
+        'is_public' => 'bool',
     ];
 
     protected static function booted(): void
@@ -52,6 +56,7 @@ class Game extends Model
         parent::booted();
 
         static::saving(static function (Game $game) {
+            $game->is_public = $game->is_public ?? false;
             $game->team_id = $game->team_id ?: Team::query()->first()->id;
         });
     }
@@ -206,11 +211,6 @@ class Game extends Model
         return !is_null($this->pausedEvent());
     }
 
-    public function isPublic(): bool
-    {
-        return $this->url_secret !== null;
-    }
-
     /**
      * Returns the playtime in seconds.
      *
@@ -351,14 +351,19 @@ class Game extends Model
 
     public function makePublic(): static
     {
-        $this->update(['url_secret' => Str::uuid() . '-' . Str::uuid()]);
+        $this->update([
+            'is_public' => true,
+            'url_secret' => Str::uuid() . '-' . Str::uuid(),
+        ]);
 
         return $this;
     }
 
     public function makePrivate(): static
     {
-        $this->update(['url_secret' => null]);
+        $this->update([
+            'is_public' => false,
+        ]);
 
         return $this;
     }

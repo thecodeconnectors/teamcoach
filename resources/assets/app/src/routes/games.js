@@ -27,7 +27,7 @@ export default [
             },
             {
                 path: 'games/:id/play',
-                component: () => import('@/app/gamestats/games/PlayGame.vue'),
+                component: () => import('@/app/gamestats/games/GamePlay.vue'),
                 name: 'games.play',
                 props: true
             },

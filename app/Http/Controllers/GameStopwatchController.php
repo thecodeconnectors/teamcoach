@@ -43,4 +43,5 @@ class GameStopwatchController extends Controller
 
         return new GamePlayResource($game);
     }
+
 }
