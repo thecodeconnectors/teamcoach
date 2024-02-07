@@ -1,7 +1,10 @@
 <template>
     <div class="max-w-full grid grid-cols-4 mx-auto px-4 sm:px-6 md:px-8">
         <h1 class="col-span-2 text-2xl text-gray-900">{{ title }}</h1>
-        <div class="col-span-2 text-right">
+        <div class="col-span-2 text-right pt-1">
+            <span v-if="!state.game.is_started" class="text-xs tracking-widest py-1">
+                Starts at {{ formatDate(state.game.start_at) }}
+            </span>
             <span v-if="state.game.is_playing" class="uppercase text-xs tracking-widest text-white bg-red-500 py-1 px-3 rounded-full">
                 <span class="bg-white rounded-full w-2 h-2 inline-block"></span> Live
             </span>
@@ -50,8 +53,9 @@
                             <tr v-for="player in state.game.playing" :key="player.id" :value="player.id">
                                 <td class="py-2">
                                     <span class="w-full flex items-left items-center">
-                                        <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
-                                         <span class="ml-1">{{ player.name }}</span>
+                                         <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
+                                         <span class="ml-1 mr-2">{{ player.name }}</span>
+                                         <Goals :goals="player.goals" />
                                     </span>
                                 </td>
                                 <td class="text-right">
@@ -74,7 +78,8 @@
                                 <td class="py-2">
                                     <span class="w-full flex items-left items-center">
                                         <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
-                                        <span class="ml-1">{{ player.name }}</span>
+                                        <span class="ml-1 mr-2">{{ player.name }}</span>
+                                         <Goals :goals="player.goals" />
                                     </span>
                                 </td>
                                 <td class="text-right">
@@ -263,6 +268,8 @@ import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 import EventListItem from '@/app/gamestats/events/EventListItem.vue';
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
+import Goals from '@/app/gamestats/Goals.vue';
+import {formatDate} from '../../../framework/helpers.js';
 
 const store = useStore();
 const router = useRouter();

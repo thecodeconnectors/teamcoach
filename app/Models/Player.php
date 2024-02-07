@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventType;
 use App\Enums\Position;
 use App\Traits\HasProfilePicture;
 use Carbon\Carbon;
@@ -52,10 +53,19 @@ class Player extends Model
             ->sum('seconds');
     }
 
+    public function goalsForGame(int|Game $game): int
+    {
+        return $this
+            ->eventsForGame($game)
+            ->filter(fn (Event $event) => $event->type === EventType::Goal)
+            ->count();
+    }
+
     public function eventsForGame(int|Game $game): Collection
     {
         $gameId = $game instanceof Game ? $game->id : $game;
 
+        // todo move to GamePlayer
         return Cache::store('array')->rememberForever($this->id . $gameId . 'eventsForGame', function () use ($gameId) {
             return Event::query()
                 ->with('game')
