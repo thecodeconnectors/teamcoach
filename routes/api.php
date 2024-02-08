@@ -51,4 +51,4 @@ Route::post('games/{game}/resume', [GameStopwatchController::class, 'resume']);
 Route::apiResource('games', GameController::class);
 Route::apiResource('teams', TeamController::class);
 Route::apiResource('players', PlayerController::class);
-Route::apiResource('events', EventController::class)->only('store');
+Route::apiResource('events', EventController::class)->only(['store', 'update', 'destroy']);

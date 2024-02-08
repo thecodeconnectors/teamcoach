@@ -1,5 +1,5 @@
 <template>
-    <div class="grid grid-cols-4 w-full py-4">
+    <div class="grid grid-cols-4 w-full py-4" :class="{'cursor-pointer': props.editable}" @click="onClick">
         <div class="col-span-3 flex space-x-3">
             <div class="flex items-left items-center">
                 <EventIcon :event="event.type" :customIcon="customIcon" size="w-12 h-12 p-3" />
@@ -24,6 +24,8 @@ import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 import {secondsToTimeString} from '@/app/helpers.js';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
 
+const emit = defineEmits(['click']);
+
 const props = defineProps({
     customIcon: {
         type: String,
@@ -33,6 +35,14 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    editable: {
+        type: Boolean,
+        default: false,
+    },
 });
+
+const onClick = () => {
+    emit('click', props.event);
+};
 
 </script>

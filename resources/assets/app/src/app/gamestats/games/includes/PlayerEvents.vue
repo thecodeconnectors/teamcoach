@@ -10,7 +10,7 @@
     </div>
 </template>
 <script setup>
-import PlayerEventListItem from '@/app/gamestats/events/PlayerEventListItem.vue';
+import PlayerEventListItem from '@/app/gamestats/games/includes/PlayerEventListItem.vue';
 
 const props = defineProps({
     player: {

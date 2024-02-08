@@ -23,13 +23,13 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="player in state.game.playing" :key="player.id" :value="player.id">
+                            <tr v-for="player in playing" :key="player.id" :value="player.id">
                                 <td class="py-2">
                                     <span class="w-full flex items-left items-center">
                                          <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
                                          <span class="ml-1 mr-2">{{ player.name }}</span>
-                                         <Goals :goals="player.goals" />
-                                         <Cards :cards="player.cards" />
+                                         <Goals :events="player.events" />
+                                         <Cards :events="player.events" />
                                     </span>
                                 </td>
                                 <td class="text-right">
@@ -49,13 +49,13 @@
                             <tr>
                                 <th colspan="3" class="py-2 text-left font-normal text-gray-800 bg-gray-50">Substitutes</th>
                             </tr>
-                            <tr v-for="player in state.game.substitutes" :key="player.id" :value="player.id">
+                            <tr v-for="player in substitutes" :key="player.id" :value="player.id">
                                 <td class="py-2">
                                     <span class="w-full flex items-left items-center">
                                         <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
                                         <span class="ml-1 mr-2">{{ player.name }}</span>
-                                        <Goals :goals="player.goals" />
-                                        <Cards :cards="player.cards" />
+                                        <Goals :events="player.events" />
+                                        <Cards :events="player.events" />
                                     </span>
                                 </td>
                                 <td class="text-right">
@@ -78,9 +78,9 @@
                @close="state.substitutePlayer = null;state.newPlayer = null"
                width-class="w-screen max-w-2xl">
         <div class="sm:overflow-hidden">
-            <div class="py-5 bg-white space-y-6 sm:p-6">
+            <div class="bg-white space-y-6">
                 <div class="mb-3 font-bold">Select new player:</div>
-                <template v-for="player in state.game.substitutes" :key="player.id">
+                <template v-for="player in substitutes" :key="player.id">
                     <button
                         :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.newPlayer?.id === player.id ? 'bg-blue-500 text-white shadow' : '']"
                         @click="state.newPlayer = player">
@@ -92,8 +92,9 @@
                         <span v-else></span>
                     </button>
                 </template>
+
+                <InputButton :disabled="state.newPlayer === null" label="Switch players" class="py-3 w-full" @click="switchPlayers" />
             </div>
-            <InputButton :disabled="state.newPlayer === null" label="Switch players" class="w-full" @click="switchPlayers" />
         </div>
     </SlideOver>
     <SlideOver :title="`Activity ${state.showPlayerEventList?.name}`"
@@ -107,10 +108,10 @@
                @close="state.focusPlayer = null"
                width-class="w-screen max-w-2xl">
         <div class="sm:overflow-hidden">
-            <div class="px-4 py-5 bg-white space-y-3 sm:p-6">
+            <div class="bg-white space-y-3">
                 <template v-for="playerActionEventType in state.playerActionEventTypes" :key="playerActionEventType.id">
                     <button
-                        @click="state.focusPlayer.playerEvent = playerActionEventType.id"
+                        @click="toggleFocusPlayerEvent(playerActionEventType)"
                         :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.focusPlayer?.playerEvent === playerActionEventType.id ? 'bg-blue-500 text-white shadow' : '']"
                     >
                         <span class="flex items-center justify-between">
@@ -120,9 +121,7 @@
                         <Icon v-if="state.focusPlayer?.playerEvent === playerActionEventType.id" prefix="far" name="check-circle" class="h-4 w-4 text-white" />
                     </button>
                 </template>
-            </div>
-            <div class="px-4 py-3 lg:bg-gray-50 text-right sm:px-6">
-                <InputButton label="Add action" class="w-full" @click="addPlayerEvent" :disabled="!state.focusPlayer?.playerEvent || state.isLoading" />
+                <InputButton label="Add action" class="py-3 w-full" @click="addPlayerEvent" :disabled="!state.focusPlayer?.playerEvent || state.isLoading" />
             </div>
         </div>
     </SlideOver>
@@ -130,7 +129,35 @@
                :open="state.showGameEvents"
                @close="state.showGameEvents = false"
                width-class="w-screen max-w-2xl">
-        <GameEvents :game="state.game" />
+        <GameEvents :game="state.game" :editable="true" @click="editEvent" />
+    </SlideOver>
+
+    <SlideOver title="Edit action"
+               :open="state.editEvent !== null"
+               @close="state.editEvent = null"
+               width-class="w-screen max-w-2xl">
+        <template v-if="state.editEvent">
+            <div class="sm:overflow-hidden">
+                <div class="bg-white space-y-6">
+                    <DropDownSelect
+                        label="Player"
+                        v-if="state.game.players && state.editEvent.player_id"
+                        v-model="state.editEvent.player_id"
+                        :options="state.game.players"
+                    />
+                    <DropDownSelect
+                        label="Event"
+                        v-if="state.playerActionEventTypes.length"
+                        v-model="state.editEvent.type"
+                        :options="state.playerActionEventTypes"
+                    />
+                    <InputField type="datetime-local" id="start_at" v-model="state.editEvent.started_at" label="Time" />
+                </div>
+                <div class="py-6">
+                    <InputButton label="Update action" class="w-full" @click="updateEvent" :disabled="state.isLoading" />
+                </div>
+            </div>
+        </template>
     </SlideOver>
     <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
         <div class="col-span-3 p-3 text-center">
@@ -211,7 +238,7 @@ import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import Icon from '@/framework/components/common/icon/Icon.vue';
 import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
 import {getPlayerActionEventTypes} from '@/app/gamestats/player-action-event-types/player-action-event-types.api.js';
-import {storeEvent} from '@/app/gamestats/events/events.api.js';
+import {patchEvent, storeEvent} from '@/app/gamestats/events/events.api.js';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
@@ -221,6 +248,8 @@ import ScoreBoard from '@/app/gamestats/games/includes/ScoreBoard.vue';
 import Cards from '@/app/gamestats/Cards.vue';
 import GameEvents from '@/app/gamestats/games/includes/GameEvents.vue';
 import PlayerEvents from '@/app/gamestats/games/includes/PlayerEvents.vue';
+import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
+import InputField from '@/framework/components/common/form/InputField.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -247,6 +276,7 @@ const state = reactive({
     newPlayer: null,
     focusPlayer: null,
     showPlayerEventList: null,
+    editEvent: null,
     positions: [],
     gamePlayerTypes: [],
     playerActionEventTypes: [],
@@ -275,13 +305,13 @@ const state = reactive({
         is_public: false,
 
         events: [],
-        breaks: [],
-        playing: [],
-        substitutes: [],
+        players: [],
     },
 });
 
 const title = computed(() => 'Play Game');
+const playing = computed(() => state.game.players.filter(player => player.type === 'playing'));
+const substitutes = computed(() => state.game.players.filter(player => player.type === 'substitute'));
 
 const loadPositions = async () => {
     const {data: positions} = await getPositions();
@@ -379,6 +409,14 @@ const switchPlayers = async () => {
     state.newPlayer = null;
 };
 
+const toggleFocusPlayerEvent = (eventType) => {
+    if (state.focusPlayer.playerEvent === eventType.id) {
+        state.focusPlayer.playerEvent = null;
+    } else {
+        state.focusPlayer.playerEvent = eventType.id;
+    }
+};
+
 const addPlayerEvent = async () => {
     state.isLoading = true;
     const {data: event} = await storeEvent({
@@ -395,20 +433,37 @@ const addPlayerEvent = async () => {
     store.addToastMessage({title: 'Player action added'});
 };
 
-const pushEvent = (event) => {
-    state.game.events.push(event);
+const updateEvent = async () => {
+    state.isLoading = true;
+    const {data: event} = await patchEvent(state.editEvent.id, state.editEvent);
+    pushEvent(event);
+    state.isLoading = false;
+    state.editEvent = null;
+    store.addToastMessage({title: 'Action updated'});
+};
 
-    const player = state.game.playing.find(player => player.id === event.player_id);
+const pushEvent = (event) => {
+    const existingGameEventIndex = state.game.events.findIndex(playerEvent => playerEvent.id === event.id);
+    if (existingGameEventIndex !== -1) {
+        state.game.events[existingGameEventIndex] = event;
+    } else {
+        state.game.events.push(event);
+    }
+
+    const player = state.game.players.find(player => player.id === event.player_id);
 
     if (player) {
-        player.events.push(event);
+        const existingPlayerEventIndex = player.events.findIndex(playerEvent => playerEvent.id === event.id);
+        if (existingPlayerEventIndex !== -1) {
+            player.events[existingPlayerEventIndex] = event;
+        } else {
+            player.events.push(event);
+        }
     }
+};
 
-    const substitute = state.game.substitutes.find(player => player.id === event.player_id);
-
-    if (substitute) {
-        substitute.events.push(event);
-    }
+const editEvent = (event) => {
+    state.editEvent = event;
 };
 
 const startTimers = () => {

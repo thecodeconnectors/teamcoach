@@ -41,4 +41,62 @@ class EventControllerTest extends TestCase
 
         $this->assertDatabaseHas(Event::class, $payload);
     }
+
+    public function testItUpdatesAnEvent(): void
+    {
+        $game = GameFactory::new()->create();
+        $player = PlayerFactory::new()->for($game->team)->create();
+
+        $game->addPlayer($player);
+
+        $event = Event::query()->create([
+            'type' => EventType::Goal->value,
+            'player_id' => $player->id,
+            'team_id' => $player->team_id,
+            'account_id' => $player->team_id,
+            'game_id' => $game->id,
+        ]);
+
+        $payload = [
+            'type' => EventType::YellowCard->value,
+            'started_at' => now()->subMinutes(10),
+        ];
+
+        $this
+            ->actingAs($this->user())
+            ->patch("api/events/{$event->id}", $payload)
+            ->assertStatus(Response::HTTP_OK);
+
+        $this->assertDatabaseHas(Event::class, [
+            'player_id' => $player->id,
+            'team_id' => $player->team_id,
+            'account_id' => $player->team_id,
+            'game_id' => $game->id,
+            'type' => EventType::YellowCard->value,
+            'started_at' => now()->subMinutes(10),
+        ]);
+    }
+
+    public function testItDeletesAnEvent(): void
+    {
+        $game = GameFactory::new()->create();
+        $player = PlayerFactory::new()->for($game->team)->create();
+
+        $game->addPlayer($player);
+
+        $event = Event::query()->create([
+            'type' => EventType::Goal->value,
+            'player_id' => $player->id,
+            'team_id' => $player->team_id,
+            'account_id' => $player->team_id,
+            'game_id' => $game->id,
+        ]);
+
+        $this
+            ->actingAs($this->user())
+            ->delete("api/events/{$event->id}")
+            ->assertStatus(Response::HTTP_NO_CONTENT);
+
+        $this->assertDatabaseCount(Event::class, 0);
+    }
 }

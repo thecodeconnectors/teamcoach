@@ -8,12 +8,14 @@
 <script setup>
 
 import Icon from '@/framework/components/common/icon/Icon.vue';
+import {computed} from 'vue';
 
 const props = defineProps({
-    cards: {
+    events: {
         type: [Array, Object],
         default: [],
     },
 });
 
+const cards = computed(() => props.events.filter(event => ['yellow-card', 'red-card'].includes(event.type)));
 </script>

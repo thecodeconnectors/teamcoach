@@ -9,12 +9,15 @@
 <script setup>
 
 import Icon from '@/framework/components/common/icon/Icon.vue';
+import {computed} from 'vue';
 
 const props = defineProps({
-    goals: {
+    events: {
         type: [Array, Object],
         default: [],
     },
 });
+
+const goals = computed(() => props.events.filter(event => event.type === 'goal'));
 
 </script>

@@ -5,9 +5,9 @@
                 {{ game.team_name }}
             </div>
             <div class="col-span-4 p-3 text-center bg-blue-600 text-white">
-                <span class="text-2xl">{{ game.team_points }}</span>
+                <span class="text-2xl">{{ teamPoints }}</span>
                 <span class="px-3">-</span>
-                <span class="text-2xl">{{ game.opponent_points }}</span>
+                <span class="text-2xl">{{ opponentPoints }}</span>
             </div>
             <div class="col-span-4 p-3 flex items-center justify-center text-right text-xl">
                 {{ game.opponent_name }}
@@ -24,6 +24,7 @@
 </template>
 <script setup>
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
+import {computed} from 'vue';
 
 const props = defineProps({
     game: {
@@ -35,4 +36,8 @@ const props = defineProps({
         default: false,
     },
 });
+
+const teamPoints = computed(() => props.game.events.filter(event => event.type === 'goal')?.length);
+const opponentPoints = computed(() => props.game.events.filter(event => event.type === 'goal-lossed')?.length);
+
 </script>

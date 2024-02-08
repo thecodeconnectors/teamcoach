@@ -76,7 +76,10 @@ class Game extends Model
 
     public function players(): BelongsToMany
     {
-        return $this->belongsToMany(Player::class)->withPivot(['game_id', 'type', 'position']);
+        return $this
+            ->belongsToMany(Player::class)
+            ->withPivot(['game_id', 'type', 'position'])
+            ->orderBy('name');
     }
 
     public function substitutes(): Collection

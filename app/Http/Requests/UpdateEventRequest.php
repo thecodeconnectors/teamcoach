@@ -13,17 +13,12 @@ class UpdateEventRequest extends FormRequest
     {
         return [
             'player_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:players,id',
             ],
-            'team_id' => [
-                'required',
-                'integer',
-                'exists:teams,id',
-            ],
             'type' => [
-                'required',
+                'nullable',
                 new Enum(EventType::class),
             ],
             'started_at' => [

@@ -65,8 +65,8 @@ const state = reactive({
         is_finished: false,
         is_public: false,
 
-        playing: [],
-        substitutes: [],
+        events: [],
+        players: [],
     },
 });
 

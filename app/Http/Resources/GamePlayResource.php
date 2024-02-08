@@ -31,10 +31,8 @@ class GamePlayResource extends JsonResource
             'is_finished' => $this->isFinished(),
             'is_paused' => $this->isPaused(),
             'is_public' => $this->is_public,
-            'playing' => GamePlayerResource::collection($this->playing()),
-            'substitutes' => GamePlayerResource::collection($this->substitutes()),
+            'players' => GamePlayerResource::collection($this->players),
             'events' => EventResource::collection($this->eventsWithoutPlayTimes()),
-            'breaks' => EventResource::collection($this->breaks()),
         ];
     }
 }
