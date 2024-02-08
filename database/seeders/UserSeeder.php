@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::query()->create([
-            'account_id' => Account::query()->create(),
+            'account_id' => Account::query()->create()->id,
             'name' => 'Martijn',
             'email' => 'info@axyrmedia.nl',
             'password' => bcrypt('marlijn11'),
