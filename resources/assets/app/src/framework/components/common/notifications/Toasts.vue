@@ -1,5 +1,5 @@
 <template>
-    <div aria-live="assertive" class="absolute z-80 inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
+    <div aria-live="assertive" class="absolute z-[100] inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
         <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
             <template v-for="(toast, index) in toasts" v-bind:key="index">
                 <Toast :toast="toast" :index="index" @dismissToast="dismissToast(index)" />

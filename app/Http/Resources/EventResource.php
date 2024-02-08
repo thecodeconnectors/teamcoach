@@ -18,9 +18,9 @@ class EventResource extends JsonResource
             'type' => $this->type->value,
             'name' => ucwords(str_replace('-', ' ', $this->type->value)),
             'player_name' => $this->player?->name,
+            'player_profile_picture' => $this->player?->profile_picture,
             'seconds' => $this->seconds,
             'second_in_game' => $this->second_in_game,
-            'time_elapsed' => $this->time_elapsed,
             'started_at' => $this->started_at->format('Y-m-d H:i:s'),
             'finished_at' => $this->finished_at?->format('Y-m-d H:i:s'),
         ];

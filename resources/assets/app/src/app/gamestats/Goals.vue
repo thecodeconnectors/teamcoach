@@ -1,20 +1,20 @@
 <template>
-    <span v-for="n in goalRange" class="-ml-1">
-        <Icon name="soccer-ball" class="bg-white text-gray-500" />
+    <span class="ml-0.5 mr-1">
+        <span v-for="n in goals" class="-ml-1 border border-transparent">
+            <Icon name="soccer-ball" class="bg-white text-gray-500" />
+        </span>
     </span>
 </template>
 
 <script setup>
 
-import {computed} from 'vue';
 import Icon from '@/framework/components/common/icon/Icon.vue';
 
 const props = defineProps({
     goals: {
-        type: Number,
-        default: 1,
+        type: [Array, Object],
+        default: [],
     },
 });
-const goalRange = computed(() => Array.from({length: props.goals}, (_, i) => i + 1));
 
 </script>

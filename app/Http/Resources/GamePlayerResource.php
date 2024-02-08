@@ -21,6 +21,7 @@ class GamePlayerResource extends JsonResource
             'playtime' => $this->playTimeForGame($this->pivot->game_id),
             'events' => EventResource::collection($this->eventsForGame($this->pivot->game_id)),
             'goals' => $this->goalsForGame($this->pivot->game_id),
+            'cards' => $this->cardsForGame($this->pivot->game_id),
         ];
     }
 }

@@ -47,6 +47,36 @@ enum EventType: string
     case DefensiveAction = 'defensive-action';
 
     /**
+     * Free kick
+     */
+    case FreeKick = 'free-kick';
+
+    /**
+     * Penalty
+     */
+    case Penalty = 'penalty';
+
+    /**
+     * Corner
+     */
+    case Corner = 'corner';
+
+    /**
+     * Foul of a Player.
+     */
+    case Foul = 'foul';
+
+    /**
+     * Yellow Card for a Player.
+     */
+    case YellowCard = 'yellow-card';
+
+    /**
+     * Red Card of a Player.
+     */
+    case RedCard = 'red-card';
+
+    /**
      * Duration Event Types have a start and possible end date, and can be measured in seconds.
      *
      * @return \App\Enums\EventType[]
@@ -67,6 +97,12 @@ enum EventType: string
             self::GoalLossed->value => self::GoalLossed->name,
             self::Assist->value => self::Assist->name,
             self::DefensiveAction->value => self::DefensiveAction->name,
+            self::Corner->value => self::Corner->name,
+            self::FreeKick->value => self::FreeKick->name,
+            self::Penalty->value => self::Penalty->name,
+            self::Foul->value => self::Foul->name,
+            self::YellowCard->value => self::YellowCard->name,
+            self::RedCard->value => self::RedCard->name,
         ];
     }
 

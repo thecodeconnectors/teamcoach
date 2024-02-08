@@ -14,7 +14,7 @@
                                             {{ title }}
                                         </DialogTitle>
                                         <div class="ml-3 h-7 flex items-center">
-                                            <button @click="close()" type="button" class="rounded-md text-gray-400 hover:text-gray-500">
+                                            <button @click="close()" type="button" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
                                                 <span class="sr-only">Close panel</span>
                                                 <Icon name="times" class="h-6 w-6" />
                                             </button>

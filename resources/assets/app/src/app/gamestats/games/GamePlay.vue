@@ -29,6 +29,7 @@
                                          <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
                                          <span class="ml-1 mr-2">{{ player.name }}</span>
                                          <Goals :goals="player.goals" />
+                                         <Cards :cards="player.cards" />
                                     </span>
                                 </td>
                                 <td class="text-right">
@@ -36,6 +37,7 @@
                                 </td>
                                 <td class="text-right object-right">
                                     <Icon name="refresh" @click="openSubstiteMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
+                                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
                                     <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
                                 </td>
                             </tr>
@@ -52,13 +54,15 @@
                                     <span class="w-full flex items-left items-center">
                                         <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
                                         <span class="ml-1 mr-2">{{ player.name }}</span>
-                                         <Goals :goals="player.goals" />
+                                        <Goals :goals="player.goals" />
+                                        <Cards :cards="player.cards" />
                                     </span>
                                 </td>
                                 <td class="text-right">
                                     <LiveSecondsToTimeString :enabled="false" :seconds="player.playtime" class="text-xs" />
                                 </td>
                                 <td class="text-right object-right">
+                                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
                                     <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
                                 </td>
                             </tr>
@@ -68,6 +72,84 @@
                 </div>
             </div>
         </main>
+    </div>
+    <SlideOver :title="`Substitute ${state.substitutePlayer?.name}`"
+               :open="state.substitutePlayer !== null"
+               @close="state.substitutePlayer = null;state.newPlayer = null"
+               width-class="w-screen max-w-2xl">
+        <div class="sm:overflow-hidden">
+            <div class="py-5 bg-white space-y-6 sm:p-6">
+                <div class="mb-3 font-bold">Select new player:</div>
+                <template v-for="player in state.game.substitutes" :key="player.id">
+                    <button
+                        :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.newPlayer?.id === player.id ? 'bg-blue-500 text-white shadow' : '']"
+                        @click="state.newPlayer = player">
+                       <span class="flex items-center justify-between">
+                            <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
+                        <span class="ml-1 mr-2">{{ player.name }} - <i class="text-xs">{{ player.position }}</i></span>
+                       </span>
+                        <Icon v-if="state.newPlayer?.id === player.id" prefix="far" name="check-circle" class="h-4 w-4 text-white" />
+                        <span v-else></span>
+                    </button>
+                </template>
+            </div>
+            <InputButton :disabled="state.newPlayer === null" label="Switch players" class="w-full" @click="switchPlayers" />
+        </div>
+    </SlideOver>
+    <SlideOver :title="`Activity ${state.showPlayerEventList?.name}`"
+               :open="state.showPlayerEventList !== null"
+               @close="state.showPlayerEventList = null"
+               width-class="w-screen max-w-2xl">
+        <PlayerEvents v-if="state.showPlayerEventList" :player="state.showPlayerEventList" />
+    </SlideOver>
+    <SlideOver :title="`Player ${state.focusPlayer?.name}`"
+               :open="state.focusPlayer !== null"
+               @close="state.focusPlayer = null"
+               width-class="w-screen max-w-2xl">
+        <div class="sm:overflow-hidden">
+            <div class="px-4 py-5 bg-white space-y-3 sm:p-6">
+                <template v-for="playerActionEventType in state.playerActionEventTypes" :key="playerActionEventType.id">
+                    <button
+                        @click="state.focusPlayer.playerEvent = playerActionEventType.id"
+                        :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.focusPlayer?.playerEvent === playerActionEventType.id ? 'bg-blue-500 text-white shadow' : '']"
+                    >
+                        <span class="flex items-center justify-between">
+                            <EventIcon :event="playerActionEventType.id" />
+                            <span class="ml-2">{{ playerActionEventType.name }}</span>
+                        </span>
+                        <Icon v-if="state.focusPlayer?.playerEvent === playerActionEventType.id" prefix="far" name="check-circle" class="h-4 w-4 text-white" />
+                    </button>
+                </template>
+            </div>
+            <div class="px-4 py-3 lg:bg-gray-50 text-right sm:px-6">
+                <InputButton label="Add action" class="w-full" @click="addPlayerEvent" :disabled="!state.focusPlayer?.playerEvent || state.isLoading" />
+            </div>
+        </div>
+    </SlideOver>
+    <SlideOver title="Game events"
+               :open="state.showGameEvents"
+               @close="state.showGameEvents = false"
+               width-class="w-screen max-w-2xl">
+        <GameEvents :game="state.game" />
+    </SlideOver>
+    <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
+        <div class="col-span-3 p-3 text-center">
+            <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
+            <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
+            <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
+            <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <button type="button" @click="state.showGameEvents = true">
+                <Icon class="h-8 w-8 " name="chart-simple" />
+            </button>
+        </div>
     </div>
     <Confirm
         @confirm="start"
@@ -101,7 +183,6 @@
         text="Are you sure you want to finish the game?"
         confirmButtonText="Finish game!"
     />
-
     <Confirm
         @confirm="publish"
         @cancel="state.showConfirmPublish = false"
@@ -118,131 +199,6 @@
         text="Are you sure you want to unpublish the game?"
         confirmButtonText="Unpublish game!"
     />
-
-    <SlideOver :title="`Substitute player ${state.substitutePlayer?.name}`"
-               :open="state.substitutePlayer !== null"
-               @close="state.substitutePlayer = null;state.newPlayer = null"
-               width-class="w-screen max-w-2xl">
-        <div class="shadow sm:rounded-md sm:overflow-hidden">
-            <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                <div class="mb-3 font-bold">Select new player:</div>
-                <template v-for="player in state.game.substitutes" :key="player.id">
-                    <button
-                        :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.newPlayer?.id === player.id ? 'bg-blue-500 text-white shadow' : '']"
-                        @click="state.newPlayer = player">
-                        <span>{{ player.name }} - <i class="text-xs">{{ player.position }}</i></span>
-                        <Icon v-if="state.newPlayer?.id === player.id" prefix="far" name="check-circle" class="h-4 w-4 text-white" />
-                    </button>
-                </template>
-            </div>
-            <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-                <span></span>
-                <InputButton :disabled="state.newPlayer === null" label="Switch players" @click="switchPlayers" />
-            </div>
-        </div>
-    </SlideOver>
-    <SlideOver :title="`Player ${state.focusPlayer?.name}`"
-               :open="state.focusPlayer !== null"
-               @close="state.focusPlayer = null"
-               width-class="w-screen max-w-2xl">
-        <div class="sm:overflow-hidden">
-            <div class="px-4 py-5 bg-white">
-                <ul role="list" class="-mb-8">
-                    <li v-for="(event, eventIdx) in state.focusPlayer?.events" :key="event.id">
-                        <EventListItem
-                            :eventType="event.type"
-                            :text="`${event.name}`"
-                            :dateTime="event.started_at"
-                            :timeElapsed="event.time_elapsed"
-                            :showConnector="eventIdx !== state.focusPlayer?.events.length - 1"
-                        />
-                    </li>
-                </ul>
-            </div>
-            <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                <template v-for="playerActionEventType in state.playerActionEventTypes" :key="playerActionEventType.id">
-                    <button
-                        @click="state.focusPlayer.playerEvent = playerActionEventType.id"
-                        :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.focusPlayer?.playerEvent === playerActionEventType.id ? 'bg-blue-500 text-white shadow' : '']"
-                    >
-                        <span class="flex items-center justify-between">
-                            <EventIcon :event="playerActionEventType.id" />
-                            <span class="ml-2">{{ playerActionEventType.name }}</span>
-                        </span>
-                        <Icon v-if="state.focusPlayer?.playerEvent === playerActionEventType.id" prefix="far" name="check-circle" class="h-4 w-4 text-white" />
-                    </button>
-                </template>
-            </div>
-            <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-                <span></span>
-                <InputButton label="Add action" @click="addPlayerEvent" :disabled="!state.focusPlayer?.playerEvent" />
-            </div>
-            <div class="absolute bottom-5 left-1/2 z-20 transform -translate-x-1/2">
-                <button type="button" @click="state.showAddGameEvent = true">
-                    <Icon class="h-16 w-16 text-green-600" name="circle-plus" />
-                </button>
-            </div>
-        </div>
-    </SlideOver>
-    <SlideOver title="Game events"
-               :open="state.showGameEvents"
-               @close="state.showGameEvents = false"
-               width-class="w-screen max-w-2xl">
-        <div class="sm:overflow-hidden">
-            <div class="px-4 py-5 bg-white">
-                <ul role="list" class="-mb-8">
-                    <li>
-                        <EventListItem
-                            text="Game started"
-                            customIcon="circle-play"
-                            :dateTime="state.game.started_at"
-                            timeElapsed="0:00"
-                            :showConnector="true"
-                        />
-                    </li>
-                    <li v-for="(event, eventIdx) in state.game?.events" :key="event.id">
-                        <EventListItem
-                            :eventType="event.type"
-                            :text="`${event.name} ${event.player_name ? event.player_name : ''}`"
-                            :dateTime="event.started_at"
-                            :timeElapsed="event.time_elapsed"
-                            :showConnector="eventIdx !== state.game?.events.length - 1"
-                        />
-                    </li>
-                    <li>
-                        <EventListItem
-                            v-if="state.game.finished_at"
-                            text="Game finished"
-                            customIcon="flag-checkered"
-                            :dateTime="state.game.finished_at"
-                            :timeElapsed="state.game.time_elapsed"
-                            :showConnector="false"
-                        />
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </SlideOver>
-
-    <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
-        <div class="col-span-3 p-3 text-center">
-            <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
-            <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
-            <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
-            <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <button type="button" @click="state.showGameEvents = true">
-                <Icon class="h-8 w-8 " name="chart-line" />
-            </button>
-        </div>
-    </div>
 </template>
 <script setup>
 import {finishGame, getGamePlay, getGamePlayerTypes, pauseGame, publishGame, resumeGame, startGame, swtichPlayers, unpublishGame} from './games.api.js';
@@ -257,12 +213,14 @@ import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
 import {getPlayerActionEventTypes} from '@/app/gamestats/player-action-event-types/player-action-event-types.api.js';
 import {storeEvent} from '@/app/gamestats/events/events.api.js';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
-import EventListItem from '@/app/gamestats/events/EventListItem.vue';
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
 import Goals from '@/app/gamestats/Goals.vue';
 import StatusBadges from '@/app/gamestats/games/includes/StatusBadges.vue';
 import ScoreBoard from '@/app/gamestats/games/includes/ScoreBoard.vue';
+import Cards from '@/app/gamestats/Cards.vue';
+import GameEvents from '@/app/gamestats/games/includes/GameEvents.vue';
+import PlayerEvents from '@/app/gamestats/games/includes/PlayerEvents.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -288,6 +246,7 @@ const state = reactive({
     substitutePlayer: null,
     newPlayer: null,
     focusPlayer: null,
+    showPlayerEventList: null,
     positions: [],
     gamePlayerTypes: [],
     playerActionEventTypes: [],
@@ -315,6 +274,8 @@ const state = reactive({
         is_finished: false,
         is_public: false,
 
+        events: [],
+        breaks: [],
         playing: [],
         substitutes: [],
     },
@@ -334,6 +295,7 @@ const loadGamePlayerTypes = async () => {
 
 const loadPlayerActionEventTypes = async () => {
     const {data: playerActionEventTypes} = await getPlayerActionEventTypes();
+
     state.playerActionEventTypes = playerActionEventTypes;
 };
 
@@ -401,6 +363,10 @@ const openSubstiteMenu = (player) => {
     state.substitutePlayer = player;
 };
 
+const openPlayerEventList = (player) => {
+    state.showPlayerEventList = player;
+};
+
 const openPlayerMenu = (player) => {
     state.focusPlayer = player;
 };
@@ -414,14 +380,35 @@ const switchPlayers = async () => {
 };
 
 const addPlayerEvent = async () => {
+    state.isLoading = true;
     const {data: event} = await storeEvent({
         player_id: state.focusPlayer.id,
         team_id: state.game.team_id,
         game_id: state.game.id,
         type: state.focusPlayer?.playerEvent,
     });
+
+    pushEvent(event);
+
+    state.isLoading = false;
+    state.focusPlayer = null;
     store.addToastMessage({title: 'Player action added'});
-    // todo reload events
+};
+
+const pushEvent = (event) => {
+    state.game.events.push(event);
+
+    const player = state.game.playing.find(player => player.id === event.player_id);
+
+    if (player) {
+        player.events.push(event);
+    }
+
+    const substitute = state.game.substitutes.find(player => player.id === event.player_id);
+
+    if (substitute) {
+        substitute.events.push(event);
+    }
 };
 
 const startTimers = () => {

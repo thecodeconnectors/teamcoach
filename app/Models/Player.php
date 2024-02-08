@@ -53,12 +53,18 @@ class Player extends Model
             ->sum('seconds');
     }
 
-    public function goalsForGame(int|Game $game): int
+    public function goalsForGame(int|Game $game): Collection
     {
         return $this
             ->eventsForGame($game)
-            ->filter(fn (Event $event) => $event->type === EventType::Goal)
-            ->count();
+            ->filter(fn (Event $event) => $event->type === EventType::Goal);
+    }
+
+    public function cardsForGame(int|Game $game): Collection
+    {
+        return $this
+            ->eventsForGame($game)
+            ->filter(fn (Event $event) => $event->type === EventType::YellowCard || $event->type === EventType::RedCard);
     }
 
     public function eventsForGame(int|Game $game): Collection
