@@ -15,8 +15,9 @@ class PlayerFactory extends Factory
     public function definition(): array
     {
         return [
+            'account_id' => fn () => AccountFactory::new(),
+            'team_id' => fn () => TeamFactory::new(),
             'name' => $this->faker->name,
-            'team_id' => fn() => TeamFactory::new(),
         ];
     }
 }

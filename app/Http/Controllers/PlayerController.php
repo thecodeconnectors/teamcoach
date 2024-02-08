@@ -6,26 +6,28 @@ use App\Http\Requests\StorePlayerRequest;
 use App\Http\Requests\UpdatePlayerRequest;
 use App\Http\Resources\PlayerResource;
 use App\Models\Player;
+use App\Repositories\PlayerRepository;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 
 class PlayerController extends Controller
 {
-    public function __construct()
+    public function __construct(protected PlayerRepository $repository)
     {
         $this->authorizeResource(Player::class);
     }
 
-    public function index(): ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
-        $players = Player::query()->paginate((int)request('per_page', 10));
+        $players = $this->repository->setRequest($request)->paginate();
 
         return PlayerResource::collection($players)->preserveQuery();
     }
 
     public function store(StorePlayerRequest $request): PlayerResource
     {
-        $player = Player::query()->create($request->validated());
+        $player = $this->repository->setRequest($request)->store($request->validated());
 
         return new PlayerResource($player);
     }

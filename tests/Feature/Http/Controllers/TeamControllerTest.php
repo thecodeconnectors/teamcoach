@@ -19,9 +19,30 @@ class TeamControllerTest extends TestCase
         TeamFactory::new()->count(20)->create();
 
         $this
-            ->actingAs($this->user())->get('api/teams')
+            ->actingAs($this->user())
+            ->get('api/teams?per_page=10')
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonPath('data', fn($data) => count($data) === 10);
+            ->assertJsonPath('data', function ($data) {
+                $this->assertCount(10, $data);
+
+                return true;
+            });
+    }
+
+    public function testItDoesNotListOpponentTeams(): void
+    {
+        TeamFactory::new()->count(5)->create();
+        TeamFactory::new()->count(5)->create(['is_opponent' => true]);
+
+        $this
+            ->actingAs($this->user())
+            ->get('api/teams')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonPath('data', function ($data) {
+                $this->assertCount(5, $data);
+
+                return true;
+            });
     }
 
     public function testItCreatesATeam(): void
@@ -29,7 +50,8 @@ class TeamControllerTest extends TestCase
         $payload = ['name' => 'Team A'];
 
         $this
-            ->actingAs($this->user())->post('api/teams', $payload)
+            ->actingAs($this->user())
+            ->post('api/teams', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
                 $json->where('data.name', $payload['name']);
@@ -43,7 +65,8 @@ class TeamControllerTest extends TestCase
         $team = TeamFactory::new()->create();
 
         $this
-            ->actingAs($this->user())->get("api/teams/{$team->id}")
+            ->actingAs($this->user())
+            ->get("api/teams/{$team->id}")
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($team) {
                 $json->where('data.name', $team->name);
@@ -57,7 +80,8 @@ class TeamControllerTest extends TestCase
         $payload = ['name' => 'Team A'];
 
         $this
-            ->actingAs($this->user())->patch("api/teams/{$team->id}", $payload)
+            ->actingAs($this->user())
+            ->patch("api/teams/{$team->id}", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($payload) {
                 $json->where('data.name', $payload['name']);
@@ -71,7 +95,8 @@ class TeamControllerTest extends TestCase
         $team = TeamFactory::new()->create();
 
         $this
-            ->actingAs($this->user())->delete("api/teams/{$team->id}")
+            ->actingAs($this->user())
+            ->delete("api/teams/{$team->id}")
             ->assertStatus(Response::HTTP_NO_CONTENT);
 
         $this->assertSoftDeleted(Team::class, ['id' => $team->id]);

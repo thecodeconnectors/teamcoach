@@ -29,7 +29,8 @@ class EventControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())->post('api/events', $payload)
+            ->actingAs($this->user())
+            ->post('api/events', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
                 $json->where('data.type', $payload['type']);

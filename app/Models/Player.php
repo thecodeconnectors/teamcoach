@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\EventType;
 use App\Enums\Position;
+use App\Repositories\Filters\Traits\FiltersRecords;
+use App\Traits\HasAccount;
 use App\Traits\HasProfilePicture;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,22 +26,16 @@ use Illuminate\Support\Facades\Cache;
  */
 class Player extends Model
 {
-    use SoftDeletes, HasProfilePicture;
+    use SoftDeletes;
+    use HasProfilePicture;
+    use FiltersRecords;
+    use HasAccount;
 
     protected $guarded = [];
 
     protected $casts = [
         'position' => Position::class,
     ];
-
-    protected static function booted(): void
-    {
-        parent::booted();
-
-        static::saving(static function (Player $player) {
-            $player->team_id = $player->team_id ?: Team::query()->first()->id;
-        });
-    }
 
     public function team(): BelongsTo
     {

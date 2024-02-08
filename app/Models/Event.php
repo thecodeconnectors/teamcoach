@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\EventType;
+use App\Repositories\Filters\Traits\FiltersRecords;
+use App\Traits\HasAccount;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Event extends Model
 {
+    use HasAccount;
+    use FiltersRecords;
+
     protected $guarded = [];
 
     protected $casts = [

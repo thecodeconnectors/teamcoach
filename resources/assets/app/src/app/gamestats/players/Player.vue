@@ -14,10 +14,20 @@
                     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                         <div class="sm:col-span-6">
                             <DropDownSelect
-                                label="Position"
+                                label="Preferred Position"
                                 v-if="state.positions"
                                 v-model="state.player.position"
                                 :options="state.positions"
+                            />
+                        </div>
+                    </div>
+                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                        <div class="sm:col-span-6">
+                            <DropDownSelect
+                                label="Main Team"
+                                v-if="state.teams"
+                                v-model="state.player.team_id"
+                                :options="state.teams"
                             />
                         </div>
                     </div>
@@ -50,10 +60,11 @@ import {useStore} from '@/framework/store';
 import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
-import {computed, onMounted, reactive} from 'vue';
+import {computed, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import {getAvatars} from '@/app/gamestats/avatars/avatars.api.js';
+import {getTeams} from '@/app/gamestats/teams/teams.api.js';
 
 const store = useStore();
 const router = useRouter();
@@ -75,6 +86,7 @@ const state = reactive({
         avatar: null,
     },
     positions: [],
+    teams: [],
 });
 
 const title = computed(() => (isEditForm.value ? 'Edit Player' : 'New Player'));
@@ -83,6 +95,11 @@ const isEditForm = computed(() => router.currentRoute.value.name === 'players.ed
 const loadPositions = async () => {
     const {data: positions} = await getPositions();
     state.positions = positions;
+};
+
+const loadTeams = async () => {
+    const {data: teams} = await getTeams();
+    state.teams = teams;
 };
 
 const loadAvatars = async () => {
@@ -123,12 +140,11 @@ const deleteCurrentPlayer = async () => {
     await router.push({name: 'players'});
 };
 
-onMounted(() => {
-    loadPositions();
-    loadAvatars();
-    if (isEditForm.value) {
-        state.id = props.id;
-        getPlayerById(state.id);
-    }
-});
+loadPositions();
+loadAvatars();
+loadTeams();
+if (isEditForm.value) {
+    state.id = props.id;
+    getPlayerById(state.id);
+}
 </script>

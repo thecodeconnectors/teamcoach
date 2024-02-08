@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\EventType;
 use App\Enums\GamePlayerType;
 use App\Enums\Position;
+use App\Repositories\Filters\Traits\FiltersRecords;
+use App\Traits\HasAccount;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +43,8 @@ use Illuminate\Support\Str;
 class Game extends Model
 {
     use SoftDeletes;
+    use HasAccount;
+    use FiltersRecords;
 
     protected $guarded = [];
 
@@ -57,7 +61,6 @@ class Game extends Model
 
         static::saving(static function (Game $game) {
             $game->is_public = $game->is_public ?? false;
-            $game->team_id = $game->team_id ?: Team::query()->first()->id;
         });
     }
 
@@ -168,6 +171,7 @@ class Game extends Model
     {
         $this->events()->create([
             'type' => EventType::GameBreak->value,
+            'account_id' => $this->account_id,
             'started_at' => $dateTime,
         ]);
 
@@ -222,6 +226,15 @@ class Game extends Model
         $breakTime = $this->breaks()->sum('seconds');
 
         return $playTime - $breakTime;
+    }
+
+    public function addTeamPlayers(): static
+    {
+        foreach ($this->team->players()->get() as $player) {
+            $this->addPlayer($player);
+        }
+
+        return $this;
     }
 
     public function addPlayer(Player $player, Carbon|string|null $dateTime = null, ?Position $position = null, ?GamePlayerType $type = GamePlayerType::Playing): static
@@ -319,6 +332,7 @@ class Game extends Model
         $this->events()
             ->create([
                 'type' => EventType::PlayTime->value,
+                'account_id' => $this->account_id,
                 'player_id' => $player->id,
                 'team_id' => $player->team_id,
                 'started_at' => $startedAt,
@@ -343,6 +357,7 @@ class Game extends Model
         $this->events()
             ->create([
                 'type' => EventType::Substituted->value,
+                'account_id' => $this->account_id,
                 'player_id' => $player->id,
                 'team_id' => $player->team_id,
                 'started_at' => $startedAt,

@@ -8,39 +8,36 @@ use App\Http\Requests\StoreGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
-use App\Models\Player;
-use App\Models\Team;
+use App\Repositories\GameRepository;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 
 class GameController extends Controller
 {
-    public function __construct()
+    public function __construct(protected GameRepository $repository)
     {
         $this->authorizeResource(Game::class);
     }
 
-    public function index(): ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
-        $games = Game::query()->paginate((int)request('per_page', 10));
+        $games = $this->repository->setRequest($request)->paginate();
 
         return GameResource::collection($games)->preserveQuery();
     }
 
     public function store(StoreGameRequest $request): GameResource
     {
-        $gameAttributes = Arr::except($request->validated(), ['player_ids', 'opponent_name']);
-        $opponent = Team::query()->create(['name' => $request->validated('opponent_name')]);
+        $this->repository->setRequest($request);
 
-        $gameAttributes['opponent_id'] = $opponent->id;
+        $opponent = $this->repository->storeOpponent($request->validated('opponent_name'));
 
-        /** @var Game $game */
-        $game = Game::query()->create($gameAttributes);
+        $attributes = Arr::except($request->validated(), ['player_ids', 'opponent_name']);
+        $attributes['opponent_id'] = $opponent->id;
 
-        foreach (Player::query()->where('team_id', $game->team_id)->get() as $player) {
-            $game->addPlayer($player);
-        }
+        $game = $this->repository->store($attributes)->addTeamPlayers();
 
         return new GameResource($game);
     }

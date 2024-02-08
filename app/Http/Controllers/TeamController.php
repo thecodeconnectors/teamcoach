@@ -6,26 +6,28 @@ use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
 use App\Http\Resources\TeamResource;
 use App\Models\Team;
+use App\Repositories\TeamRepository;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 
 class TeamController extends Controller
 {
-    public function __construct()
+    public function __construct(protected TeamRepository $repository)
     {
         $this->authorizeResource(Team::class);
     }
 
-    public function index(): ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
-        $teams = Team::query()->paginate((int)request('per_page', 10));
+        $teams = $this->repository->setRequest($request)->paginate();
 
         return TeamResource::collection($teams)->preserveQuery();
     }
 
     public function store(StoreTeamRequest $request): TeamResource
     {
-        $team = Team::query()->create($request->validated());
+        $team = $this->repository->setRequest($request)->store($request->validated());
 
         return new TeamResource($team);
     }

@@ -15,6 +15,7 @@ class TeamFactory extends Factory
     public function definition(): array
     {
         return [
+            'account_id' => fn () => AccountFactory::new(),
             'name' => $this->faker->name,
         ];
     }

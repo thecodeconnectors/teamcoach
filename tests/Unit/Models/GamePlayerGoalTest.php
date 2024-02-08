@@ -30,7 +30,7 @@ class GamePlayerGoalTest extends TestCase
             EventFactory::new()->for($game)->for($player)->create($event);
         }
 
-        $this->assertEquals($expectedGoals, $player->goalsForGame($game));
+        $this->assertEquals($expectedGoals, $player->goalsForGame($game)->count());
     }
 
     public static function gamePlayTDataProvider(): array

@@ -21,6 +21,7 @@ class GamePlayTimeTest extends TestCase
         $game = GameFactory::new()->create($gameAttributes);
 
         foreach ($playTimeEventAttributes as $playTimeEvent) {
+            $playTimeEvent['account_id'] = $game->account_id;
             $game->events()->create($playTimeEvent);
         }
 

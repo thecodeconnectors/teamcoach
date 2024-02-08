@@ -24,7 +24,8 @@ class GameStopwatchControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())->post("api/games/{$game->id}/start", $payload)
+            ->actingAs($this->user())
+            ->post("api/games/{$game->id}/start", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($dateTime) {
                 $json->where('data.started_at', $dateTime);
@@ -34,7 +35,6 @@ class GameStopwatchControllerTest extends TestCase
     public function testItFinishesAGame(): void
     {
         $game = GameFactory::new()->create();
-
         $game->start(TestCase::$now);
 
         $payload = [
@@ -42,7 +42,8 @@ class GameStopwatchControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())->post("api/games/{$game->id}/finish", $payload)
+            ->actingAs($this->user())
+            ->post("api/games/{$game->id}/finish", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($dateTime) {
                 $json->where('data.finished_at', $dateTime);
@@ -55,7 +56,8 @@ class GameStopwatchControllerTest extends TestCase
         $game->start(TestCase::$now);
 
         $this
-            ->actingAs($this->user())->post("api/games/{$game->id}/pause", [
+            ->actingAs($this->user())
+            ->post("api/games/{$game->id}/pause", [
                 'date_time' => TestCase::$now,
             ])
             ->assertStatus(Response::HTTP_OK);
@@ -74,7 +76,8 @@ class GameStopwatchControllerTest extends TestCase
         $game->pause($start = now()->subMinutes(10)->format('Y-m-d H:i:s'));
 
         $this
-            ->actingAs($this->user())->post("api/games/{$game->id}/resume", [
+            ->actingAs($this->user())
+            ->post("api/games/{$game->id}/resume", [
                 'date_time' => $end = now()->format('Y-m-d H:i:s'),
             ])
             ->assertStatus(Response::HTTP_OK);
