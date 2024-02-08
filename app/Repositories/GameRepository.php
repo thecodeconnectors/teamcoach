@@ -16,7 +16,7 @@ class GameRepository extends AbstractRepository
 
     public function query(): Builder
     {
-        return Game::filterBy($this->filters)->where('is_opponent', 0);
+        return Game::filterBy($this->filters);
     }
 
     public function store(array $attributes): Game
