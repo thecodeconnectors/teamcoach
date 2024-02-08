@@ -10,9 +10,9 @@
             </span>
         </div>
     </div>
-    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:grid-cols-12 lg:gap-8">
-        <main class="col-span-12">
-            <div class="lg:shadow rounded-md sm:overflow-hidden">
+    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
+        <main>
+            <div class="lg:shadow rounded-md overflow-y-auto sm:overflow-hidden">
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
                 <div class="bg-white space-y-6 lg:p-6">
                     <div class="sm:col-span-6">
@@ -72,6 +72,26 @@
                 </div>
             </div>
         </main>
+
+        <div class="sticky md:absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
+            <div class="col-span-3 p-3 text-center">
+                <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
+                <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
+            </div>
+            <div class="col-span-3 p-3 text-center align-middle">
+                <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
+                <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
+            </div>
+            <div class="col-span-3 p-3 text-center align-middle">
+                <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
+                <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
+            </div>
+            <div class="col-span-3 p-3 text-center align-middle">
+                <button type="button" @click="state.showGameEvents = true">
+                    <Icon class="h-8 w-8 " name="chart-simple" />
+                </button>
+            </div>
+        </div>
     </div>
     <SlideOver :title="`Substitute ${state.substitutePlayer?.name}`"
                :open="state.substitutePlayer !== null"
@@ -159,25 +179,6 @@
             </div>
         </template>
     </SlideOver>
-    <div class="absolute bottom-0 w-full grid grid-cols-12 divide-x z-10 flex-shrink-0 h-16 bg-white shadow-inner">
-        <div class="col-span-3 p-3 text-center">
-            <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
-            <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
-            <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
-            <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-            <button type="button" @click="state.showGameEvents = true">
-                <Icon class="h-8 w-8 " name="chart-simple" />
-            </button>
-        </div>
-    </div>
     <Confirm
         @confirm="start"
         @cancel="state.showConfirmStart = false"

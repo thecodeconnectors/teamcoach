@@ -64,7 +64,7 @@
             </div>
 
             <main class="flex-1 relative overflow-y-auto focus:outline-none">
-                <div class="py-6">
+                <div class="md:py-6">
                     <router-view></router-view>
                 </div>
             </main>
