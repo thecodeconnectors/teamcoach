@@ -11,22 +11,24 @@
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
             </div>
             <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6">
-                <GameEvents :game="state.game" />
+                <GameEvents v-if="state.showTab ==='events'" :game="state.game" />
+                <GamePlayers v-if="state.showTab ==='players'" :playing="playing" :substitutes="substitutes" :editable="false" />
+                <GameInfo v-if="state.showTab ==='game'" :game="state.game" />
             </div>
         </main>
     </div>
-    <div class="sticky md:absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
+    <div class="absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
         <div class="col-span-3 p-3 text-center">
-
+            <InputButton label="Actions" @click="state.showTab = 'events'" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton label="Players" @click="state.showTab = 'players'" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton label="Game" @click="state.showTab = 'game'" class="w-full" />
         </div>
         <div class="col-span-3 p-3 text-center align-middle">
 
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-
-        </div>
-        <div class="col-span-3 p-3 text-center align-middle">
-        
         </div>
     </div>
 </template>
@@ -38,6 +40,9 @@ import {computed, reactive} from 'vue';
 import StatusBadges from '@/app/gamestats/games/includes/StatusBadges.vue';
 import ScoreBoard from '@/app/gamestats/games/includes/ScoreBoard.vue';
 import GameEvents from '@/app/gamestats/games/includes/GameEvents.vue';
+import InputButton from '@/framework/components/common/form/InputButton.vue';
+import GamePlayers from '@/app/gamestats/games/includes/GamePlayers.vue';
+import GameInfo from '@/app/gamestats/games/includes/GameInfo.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -53,6 +58,7 @@ const props = defineProps({
 
 const state = reactive({
     isLoading: false,
+    showTab: 'events',
     game: {
         id: null,
         team_id: null,
@@ -82,6 +88,9 @@ const state = reactive({
     },
 });
 
+const playing = computed(() => state.game.players.filter(player => player.type === 'playing'));
+const substitutes = computed(() => state.game.players.filter(player => player.type === 'substitute'));
+
 const getGame = async (urlSecret) => {
 
     const {data: game} = await showPublicGame(urlSecret);
@@ -89,6 +98,8 @@ const getGame = async (urlSecret) => {
 
     if (state.game.is_playing && !state.game.is_paused) {
         startTimers();
+    } else {
+        stopTimers();
     }
 };
 

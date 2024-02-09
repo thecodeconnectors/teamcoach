@@ -16,58 +16,14 @@
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
                 <div class="bg-white space-y-6 lg:p-6">
                     <div class="sm:col-span-6">
-                        <table class="w-full text-gray-600">
-                            <thead>
-                            <tr>
-                                <th colspan="3" class="py-2 text-left font-normal text-gray-800 bg-gray-50">Players</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="player in playing" :key="player.id" :value="player.id">
-                                <td class="py-2">
-                                    <span class="w-full flex items-left items-center">
-                                         <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
-                                         <span class="ml-1 mr-2">{{ player.name }}</span>
-                                         <Goals :events="player.events" />
-                                         <Cards :events="player.events" />
-                                    </span>
-                                </td>
-                                <td class="text-right">
-                                    <LiveSecondsToTimeString :enabled="state.timersEnabled" :seconds="player.playtime" class="text-xs" />
-                                </td>
-                                <td class="text-right object-right">
-                                    <Icon name="refresh" @click="openSubstiteMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
-                                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
-                                    <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
-                                </td>
-                            </tr>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td colspan="3">&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan="3" class="py-2 text-left font-normal text-gray-800 bg-gray-50">Substitutes</th>
-                            </tr>
-                            <tr v-for="player in substitutes" :key="player.id" :value="player.id">
-                                <td class="py-2">
-                                    <span class="w-full flex items-left items-center">
-                                        <ProfilePicture :src="player.profile_picture" :alt="player.name" width="28" />
-                                        <span class="ml-1 mr-2">{{ player.name }}</span>
-                                        <Goals :events="player.events" />
-                                        <Cards :events="player.events" />
-                                    </span>
-                                </td>
-                                <td class="text-right">
-                                    <LiveSecondsToTimeString :enabled="false" :seconds="player.playtime" class="text-xs" />
-                                </td>
-                                <td class="text-right object-right">
-                                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
-                                    <Icon name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
-                                </td>
-                            </tr>
-                            </tfoot>
-                        </table>
+                        <GamePlayers
+                            :playing="playing"
+                            :substitutes="substitutes"
+                            :editable="true"
+                            @open-substite-menu="openSubstiteMenu"
+                            @open-player-event-list="openPlayerEventList"
+                            @open-player-menu="openPlayerMenu"
+                        />
                     </div>
                 </div>
             </div>
@@ -115,12 +71,6 @@
                 <InputButton :disabled="state.newPlayer === null" label="Switch players" class="py-3 w-full" @click="switchPlayers" />
             </div>
         </div>
-    </SlideOver>
-    <SlideOver :title="`Activity ${state.showPlayerEventList?.name}`"
-               :open="state.showPlayerEventList !== null"
-               @close="state.showPlayerEventList = null"
-               width-class="w-screen max-w-2xl">
-        <PlayerEvents v-if="state.showPlayerEventList" :player="state.showPlayerEventList" />
     </SlideOver>
     <SlideOver :title="`Player ${state.focusPlayer?.name}`"
                :open="state.focusPlayer !== null"
@@ -248,16 +198,13 @@ import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
 import {getPlayerActionEventTypes} from '@/app/gamestats/player-action-event-types/player-action-event-types.api.js';
 import {destroyEvent, patchEvent, storeEvent} from '@/app/gamestats/events/events.api.js';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
-import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
-import Goals from '@/app/gamestats/Goals.vue';
 import StatusBadges from '@/app/gamestats/games/includes/StatusBadges.vue';
 import ScoreBoard from '@/app/gamestats/games/includes/ScoreBoard.vue';
-import Cards from '@/app/gamestats/Cards.vue';
 import GameEvents from '@/app/gamestats/games/includes/GameEvents.vue';
-import PlayerEvents from '@/app/gamestats/games/includes/PlayerEvents.vue';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
+import GamePlayers from '@/app/gamestats/games/includes/GamePlayers.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -284,7 +231,6 @@ const state = reactive({
     substitutePlayer: null,
     newPlayer: null,
     focusPlayer: null,
-    showPlayerEventList: null,
     editEvent: null,
     positions: [],
     gamePlayerTypes: [],
@@ -400,10 +346,6 @@ const openPublicGame = () => {
 
 const openSubstiteMenu = (player) => {
     state.substitutePlayer = player;
-};
-
-const openPlayerEventList = (player) => {
-    state.showPlayerEventList = player;
 };
 
 const openPlayerMenu = (player) => {
