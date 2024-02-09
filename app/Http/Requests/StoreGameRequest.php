@@ -12,7 +12,7 @@ class StoreGameRequest extends FormRequest
     public function authorize(): bool
     {
         $accountId = $this->user()->account_id;
-        $playerIds = $this->get('player_ids');
+        $playerIds = (array)$this->get('player_ids');
         $teamId = $this->get('team_id');
 
         foreach ($playerIds as $playerId) {
