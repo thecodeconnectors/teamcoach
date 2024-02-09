@@ -10,7 +10,7 @@
             </span>
         </div>
     </div>
-    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
+    <div class="max-w-full h-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
         <main>
             <div class="lg:shadow rounded-md overflow-y-auto sm:overflow-hidden">
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
@@ -71,27 +71,26 @@
                     </div>
                 </div>
             </div>
+            <div class="absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
+                <div class="col-span-3 p-3 text-center">
+                    <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
+                    <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
+                </div>
+                <div class="col-span-3 p-3 text-center align-middle">
+                    <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
+                    <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
+                </div>
+                <div class="col-span-3 p-3 text-center align-middle">
+                    <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
+                    <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
+                </div>
+                <div class="col-span-3 p-3 text-center align-middle">
+                    <button type="button" @click="state.showGameEvents = true">
+                        <Icon class="h-8 w-8 " name="chart-simple" />
+                    </button>
+                </div>
+            </div>
         </main>
-
-        <div class="sticky md:absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
-            <div class="col-span-3 p-3 text-center">
-                <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
-                <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
-            </div>
-            <div class="col-span-3 p-3 text-center align-middle">
-                <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
-                <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
-            </div>
-            <div class="col-span-3 p-3 text-center align-middle">
-                <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
-                <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
-            </div>
-            <div class="col-span-3 p-3 text-center align-middle">
-                <button type="button" @click="state.showGameEvents = true">
-                    <Icon class="h-8 w-8 " name="chart-simple" />
-                </button>
-            </div>
-        </div>
     </div>
     <SlideOver :title="`Substitute ${state.substitutePlayer?.name}`"
                :open="state.substitutePlayer !== null"
@@ -151,7 +150,6 @@
                width-class="w-screen max-w-2xl">
         <GameEvents :game="state.game" :editable="true" @click="editEvent" />
     </SlideOver>
-
     <SlideOver title="Edit action"
                :open="state.editEvent !== null"
                @close="state.editEvent = null"
@@ -173,8 +171,9 @@
                     />
                     <InputField type="datetime-local" id="start_at" v-model="state.editEvent.started_at" label="Time" />
                 </div>
-                <div class="py-6">
+                <div class="space-y-6 py-6">
                     <InputButton label="Update action" class="w-full" @click="updateEvent" :disabled="state.isLoading" />
+                    <InputButton label="Delete action" class="w-full" color="red" @click="state.showConfirmDeleteEvent = true" :disabled="state.isLoading" />
                 </div>
             </div>
         </template>
@@ -227,6 +226,14 @@
         text="Are you sure you want to unpublish the game?"
         confirmButtonText="Unpublish game!"
     />
+    <Confirm
+        @confirm="deleteEvent"
+        @cancel="state.showConfirmDeleteEvent = false"
+        :open="state.showConfirmDeleteEvent"
+        title="Delete action"
+        text="Are you sure you want to delete this action?"
+        confirmButtonText="Delete action!"
+    />
 </template>
 <script setup>
 import {finishGame, getGamePlay, getGamePlayerTypes, pauseGame, publishGame, resumeGame, startGame, swtichPlayers, unpublishGame} from './games.api.js';
@@ -239,7 +246,7 @@ import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import Icon from '@/framework/components/common/icon/Icon.vue';
 import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
 import {getPlayerActionEventTypes} from '@/app/gamestats/player-action-event-types/player-action-event-types.api.js';
-import {patchEvent, storeEvent} from '@/app/gamestats/events/events.api.js';
+import {destroyEvent, patchEvent, storeEvent} from '@/app/gamestats/events/events.api.js';
 import EventIcon from '@/app/gamestats/events/EventIcon.vue';
 import LiveSecondsToTimeString from '@/app/gamestats/LiveSecondsToTimeString.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
@@ -273,6 +280,7 @@ const state = reactive({
     showGameEvents: false,
     showConfirmPublish: false,
     showConfirmUnpublish: false,
+    showConfirmDeleteEvent: false,
     substitutePlayer: null,
     newPlayer: null,
     focusPlayer: null,
@@ -443,6 +451,15 @@ const updateEvent = async () => {
     store.addToastMessage({title: 'Action updated'});
 };
 
+const deleteEvent = async () => {
+    state.isLoading = true;
+    await destroyEvent(state.editEvent.id);
+    pullEvent(state.editEvent);
+    state.isLoading = false;
+    state.editEvent = null;
+    store.addToastMessage({title: 'Action deleted'});
+};
+
 const pushEvent = (event) => {
     const existingGameEventIndex = state.game.events.findIndex(playerEvent => playerEvent.id === event.id);
     if (existingGameEventIndex !== -1) {
@@ -459,6 +476,23 @@ const pushEvent = (event) => {
             player.events[existingPlayerEventIndex] = event;
         } else {
             player.events.push(event);
+        }
+    }
+};
+
+const pullEvent = (event) => {
+    const existingGameEventIndex = state.game.events.findIndex(gameEvent => gameEvent.id === event.id);
+
+    if (existingGameEventIndex !== -1) {
+        state.game.events.splice(existingGameEventIndex, 1);
+    }
+
+    const player = state.game.players.find(player => player.id === event.player_id);
+
+    if (player) {
+        const existingPlayerEventIndex = player.events.findIndex(playerEvent => playerEvent.id === event.id);
+        if (existingPlayerEventIndex !== -1) {
+            player.events.splice(existingPlayerEventIndex, 1);
         }
     }
 };

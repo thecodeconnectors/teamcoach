@@ -5,18 +5,30 @@
             <StatusBadges :game="state.game" />
         </div>
     </div>
-    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:grid-cols-12 lg:gap-8">
-        <main class="col-span-12">
-            <div class="lg:shadow rounded-md sm:overflow-hidden">
+    <div class="max-w-full h-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
+        <main>
+            <div class="lg:shadow rounded-md overflow-y-auto sm:overflow-hidden">
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
+            </div>
+            <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6">
+                <GameEvents :game="state.game" />
             </div>
         </main>
     </div>
+    <div class="sticky md:absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
+        <div class="col-span-3 p-3 text-center">
 
-    <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6">
-        <GameEvents :game="state.game" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+        
+        </div>
     </div>
-
 </template>
 <script setup>
 import {useStore} from '@/framework/store/index.js';
