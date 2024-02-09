@@ -13,6 +13,8 @@ class RoleAndPermissionSeeder extends Seeder
 {
     private null|Model|Role $userRole;
 
+    private null|Model|Role $ownerRole;
+
     private null|Model|Role $adminRole;
 
     public function run(): void
@@ -30,6 +32,7 @@ class RoleAndPermissionSeeder extends Seeder
     private function createRoles(): void
     {
         $this->userRole = Role::query()->firstOrCreate(['name' => RoleType::User->value], ['id' => 1, 'guard_name' => 'web']);
+        $this->ownerRole = Role::query()->firstOrCreate(['name' => RoleType::Owner->value], ['id' => 1, 'guard_name' => 'web']);
         $this->adminRole = Role::query()->firstOrCreate(['name' => RoleType::Admin->value], ['id' => 2, 'guard_name' => 'web']);
     }
 
@@ -41,10 +44,10 @@ class RoleAndPermissionSeeder extends Seeder
         $update = Permission::query()->firstOrCreate(['name' => 'game.update']);
         $delete = Permission::query()->firstOrCreate(['name' => 'game.delete']);
 
-        $this->userRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+        $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
         $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
     }
-    
+
     private function setupTeamPermissions(): void
     {
         $viewAny = Permission::query()->firstOrCreate(['name' => 'team.viewAny']);
@@ -53,7 +56,7 @@ class RoleAndPermissionSeeder extends Seeder
         $update = Permission::query()->firstOrCreate(['name' => 'team.update']);
         $delete = Permission::query()->firstOrCreate(['name' => 'team.delete']);
 
-        $this->userRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+        $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
         $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
     }
 
@@ -65,7 +68,7 @@ class RoleAndPermissionSeeder extends Seeder
         $update = Permission::query()->firstOrCreate(['name' => 'player.update']);
         $delete = Permission::query()->firstOrCreate(['name' => 'player.delete']);
 
-        $this->userRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+        $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
         $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
     }
 
@@ -77,7 +80,7 @@ class RoleAndPermissionSeeder extends Seeder
         $update = Permission::query()->firstOrCreate(['name' => 'event.update']);
         $delete = Permission::query()->firstOrCreate(['name' => 'event.delete']);
 
-        $this->userRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+        $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
         $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
     }
 }

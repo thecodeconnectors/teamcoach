@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Contract\BelongsToAccount;
 use App\Traits\HasAccount;
 use App\Traits\HasProfilePicture;
 use Carbon\Carbon;
@@ -41,4 +42,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function owns(BelongsToAccount $model): bool
+    {
+        return $model->account_id === $this->account_id;
+    }
 }

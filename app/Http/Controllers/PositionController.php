@@ -11,5 +11,4 @@ class PositionController extends Controller
     {
         return new PositionResource(Position::toArray());
     }
-
 }

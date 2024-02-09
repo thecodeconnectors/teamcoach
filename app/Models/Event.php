@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\BelongsToAccount;
 use App\Enums\EventType;
 use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $time_elapsed
  *
  */
-class Event extends Model
+class Event extends Model implements BelongsToAccount
 {
     use HasAccount;
     use FiltersRecords;

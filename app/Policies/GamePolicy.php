@@ -4,9 +4,16 @@ namespace App\Policies;
 
 use App\Models\Game;
 use App\Models\User;
+use App\Modules\Users\Enums\RoleType;
 
 class GamePolicy
 {
+    public function before(User $user): bool|null
+    {
+        // todo: make god permission
+        return $user->hasRole(RoleType::Admin->value) ?: null;
+    }
+    
     public function viewAny(User $user): bool
     {
         return $user->hasPermissionTo('game.viewAny');
@@ -14,7 +21,7 @@ class GamePolicy
 
     public function view(User $user, Game $game): bool
     {
-        return $user->hasPermissionTo('game.view');
+        return $user->hasPermissionTo('game.view') && $user->owns($game);
     }
 
     public function create(User $user): bool
@@ -24,11 +31,11 @@ class GamePolicy
 
     public function update(User $user, Game $game): bool
     {
-        return $user->hasPermissionTo('game.update');
+        return $user->hasPermissionTo('game.update') && $user->owns($game);
     }
 
     public function delete(User $user, Game $game): bool
     {
-        return $user->hasPermissionTo('game.delete');
+        return $user->hasPermissionTo('game.delete') && $user->owns($game);
     }
 }

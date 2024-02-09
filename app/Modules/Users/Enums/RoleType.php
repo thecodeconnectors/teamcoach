@@ -6,5 +6,7 @@ enum RoleType: string
 {
     case User = 'user';
 
+    case Owner = 'owner';
+
     case Admin = 'admin';
 }

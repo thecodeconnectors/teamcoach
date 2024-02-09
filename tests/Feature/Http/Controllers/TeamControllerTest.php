@@ -16,10 +16,11 @@ class TeamControllerTest extends TestCase
 
     public function testItListsTeams(): void
     {
-        TeamFactory::new()->count(20)->create();
+        $user = $this->owner();
+        TeamFactory::new()->count(20)->for($user->account)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->get('api/teams?per_page=10')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonPath('data', function ($data) {
@@ -31,15 +32,36 @@ class TeamControllerTest extends TestCase
 
     public function testItDoesNotListOpponentTeams(): void
     {
-        TeamFactory::new()->count(5)->create();
-        TeamFactory::new()->count(5)->create(['is_opponent' => true]);
+        $user = $this->owner();
+        TeamFactory::new()->count(5)->for($user->account)->create();
+        TeamFactory::new()->count(5)->for($user->account)->create(['is_opponent' => true]);
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->get('api/teams')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonPath('data', function ($data) {
                 $this->assertCount(5, $data);
+
+                return true;
+            });
+    }
+
+    public function testItOnlyListsTeamsOfTheUsersAccount(): void
+    {
+        $user = $this->owner();
+
+        $userTeam = TeamFactory::new()->for($user->account)->create();
+        TeamFactory::new()->create();
+
+        $this
+            ->actingAs($user)
+            ->get('api/teams?per_page=10')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonPath('data', function ($data) use ($userTeam) {
+                $this->assertCount(1, $data);
+
+                $this->assertEquals($userTeam->id, $data[0]['id']);
 
                 return true;
             });
@@ -50,7 +72,7 @@ class TeamControllerTest extends TestCase
         $payload = ['name' => 'Team A'];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($this->owner())
             ->post('api/teams', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -62,10 +84,11 @@ class TeamControllerTest extends TestCase
 
     public function testItShowsATeam(): void
     {
-        $team = TeamFactory::new()->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->get("api/teams/{$team->id}")
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($team) {
@@ -75,12 +98,13 @@ class TeamControllerTest extends TestCase
 
     public function testItUpdatesATeam(): void
     {
-        $team = TeamFactory::new()->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
 
         $payload = ['name' => 'Team A'];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->patch("api/teams/{$team->id}", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -92,10 +116,11 @@ class TeamControllerTest extends TestCase
 
     public function testItDeletesATeam(): void
     {
-        $team = TeamFactory::new()->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->delete("api/teams/{$team->id}")
             ->assertStatus(Response::HTTP_NO_CONTENT);
 

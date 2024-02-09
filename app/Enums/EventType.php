@@ -2,8 +2,6 @@
 
 namespace App\Enums;
 
-use App\Modules\PurchaseOrders\Enums\ReasonCode;
-
 enum EventType: string
 {
     /**

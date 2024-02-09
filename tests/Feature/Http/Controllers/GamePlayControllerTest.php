@@ -16,10 +16,11 @@ class GamePlayControllerTest extends TestCase
 
     public function testItSwitchesTwoPlayers(): void
     {
-        $team = TeamFactory::new()->create();
-        $playerA = PlayerFactory::new()->for($team)->create();
-        $playerB = PlayerFactory::new()->for($team)->create();
-        $game = GameFactory::new()->for($team)->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $playerA = PlayerFactory::new()->for($user->account)->for($team)->create();
+        $playerB = PlayerFactory::new()->for($user->account)->for($team)->create();
+        $game = GameFactory::new()->for($user->account)->for($team)->create();
 
         $game->addPlayer($playerA);
         $game->addSubstitute($playerB);
@@ -30,7 +31,7 @@ class GamePlayControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post("api/games/{$game->id}/switch-player", $payload);
 
         $this->assertDatabaseHas('game_player', [

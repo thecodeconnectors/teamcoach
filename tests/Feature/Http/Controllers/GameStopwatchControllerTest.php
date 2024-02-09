@@ -17,14 +17,15 @@ class GameStopwatchControllerTest extends TestCase
 
     public function testItStartsAGame(): void
     {
-        $game = GameFactory::new()->create();
+        $user = $this->owner();
+        $game = GameFactory::new()->for($user->account)->create();
 
         $payload = [
             'date_time' => $dateTime = now()->subMinutes(10)->format('Y-m-d H:i:s'),
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post("api/games/{$game->id}/start", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($dateTime) {
@@ -34,7 +35,8 @@ class GameStopwatchControllerTest extends TestCase
 
     public function testItFinishesAGame(): void
     {
-        $game = GameFactory::new()->create();
+        $user = $this->owner();
+        $game = GameFactory::new()->for($user->account)->create();
         $game->start(TestCase::$now);
 
         $payload = [
@@ -42,7 +44,7 @@ class GameStopwatchControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post("api/games/{$game->id}/finish", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($dateTime) {
@@ -52,11 +54,12 @@ class GameStopwatchControllerTest extends TestCase
 
     public function testItPausesAGame(): void
     {
-        $game = GameFactory::new()->create();
+        $user = $this->owner();
+        $game = GameFactory::new()->for($user->account)->create();
         $game->start(TestCase::$now);
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post("api/games/{$game->id}/pause", [
                 'date_time' => TestCase::$now,
             ])
@@ -71,12 +74,13 @@ class GameStopwatchControllerTest extends TestCase
 
     public function testItResumesAPausedAGame(): void
     {
-        $game = GameFactory::new()->create();
+        $user = $this->owner();
+        $game = GameFactory::new()->for($user->account)->create();
 
         $game->pause($start = now()->subMinutes(10)->format('Y-m-d H:i:s'));
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post("api/games/{$game->id}/resume", [
                 'date_time' => $end = now()->format('Y-m-d H:i:s'),
             ])

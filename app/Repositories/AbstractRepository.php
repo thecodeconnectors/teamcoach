@@ -34,7 +34,7 @@ abstract class AbstractRepository
         return $this
             ->setFilters($request->all())
             ->setUser($request->user())
-            ->setPerPage(request('per_page'));
+            ->setPerPage($request->get('per_page'));
     }
 
     public function setFilters(array $filters): static

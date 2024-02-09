@@ -2,10 +2,28 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\ChecksModelOwnership;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGameRequest extends FormRequest
 {
+    use ChecksModelOwnership;
+
+    public function authorize(): bool
+    {
+        $accountId = $this->user()->account_id;
+        $playerIds = $this->get('player_ids');
+        $teamId = $this->get('team_id');
+
+        foreach ($playerIds as $playerId) {
+            if (!$this->playerBelongsToAccount($accountId, $playerId)) {
+                return false;
+            }
+        }
+
+        return $this->teamBelongsToAccount($accountId, $teamId);
+    }
+
     public function rules(): array
     {
         return [

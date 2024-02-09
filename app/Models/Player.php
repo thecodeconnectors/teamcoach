@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\BelongsToAccount;
 use App\Enums\EventType;
 use App\Enums\Position;
 use App\Repositories\Filters\Traits\FiltersRecords;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Cache;
  * @property Carbon|null $updated_at
  * @property $pivot
  */
-class Player extends Model
+class Player extends Model implements BelongsToAccount
 {
     use SoftDeletes;
     use HasProfilePicture;

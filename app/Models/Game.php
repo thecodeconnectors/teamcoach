@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\BelongsToAccount;
 use App\Enums\EventType;
 use App\Enums\GamePlayerType;
 use App\Enums\Position;
@@ -40,7 +41,7 @@ use Illuminate\Support\Str;
  * @property int $seconds_elapsed
  * @property string $time_elapsed
  */
-class Game extends Model
+class Game extends Model implements BelongsToAccount
 {
     use SoftDeletes;
     use HasAccount;

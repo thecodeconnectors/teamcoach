@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GamePublishRequest;
 use App\Http\Resources\GamePlayResource;
 use App\Models\Game;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,19 +21,17 @@ class GamePublishController extends Controller
         return new GamePlayResource($game);
     }
 
-    public function publish(Game $game): GamePlayResource
+    public function publish(GamePublishRequest $request, Game $game): GamePlayResource
     {
-        // todo authorize
         $game->makePublic();
 
         return new GamePlayResource($game);
     }
 
-    public function unpublish(Game $game): GamePlayResource
+    public function unpublish(GamePublishRequest $request, Game $game): GamePlayResource
     {
         $game->makePrivate();
 
         return new GamePlayResource($game);
     }
-
 }

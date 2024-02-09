@@ -3,12 +3,26 @@
 namespace App\Http\Requests;
 
 use App\Enums\EventType;
-use App\Modules\Partners\Enums\AccountGroupCode;
+use App\Traits\ChecksModelOwnership;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreEventRequest extends FormRequest
 {
+    use ChecksModelOwnership;
+
+    public function authorize(): bool
+    {
+        $accountId = $this->user()->account_id;
+        $playerId = $this->get('player_id');
+        $teamId = $this->get('team_id');
+        $gameId = $this->get('game_id');
+
+        return $this->teamBelongsToAccount($accountId, $teamId)
+            && $this->gameBelongsToAccount($accountId, $gameId)
+            && $this->playerBelongsToGame($gameId, $playerId);
+    }
+
     public function rules(): array
     {
         return [

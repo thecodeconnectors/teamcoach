@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contract\BelongsToAccount;
 use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
  */
-class Team extends Model
+class Team extends Model implements BelongsToAccount
 {
     use SoftDeletes;
     use FiltersRecords;

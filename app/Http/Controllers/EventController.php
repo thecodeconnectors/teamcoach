@@ -23,11 +23,6 @@ class EventController extends Controller
         return new EventResource($event);
     }
 
-    public function show(Event $event): EventResource
-    {
-        return new EventResource($event);
-    }
-
     public function update(UpdateEventRequest $request, Event $event): EventResource
     {
         $event->update($request->validated());

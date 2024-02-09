@@ -21,7 +21,7 @@ class PlayerControllerTest extends TestCase
         PlayerFactory::new()->count(20)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($this->admin())
             ->get('api/players?per_page=10')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonPath('data', function ($data) {
@@ -31,9 +31,30 @@ class PlayerControllerTest extends TestCase
             });
     }
 
+    public function testItOnlyListsPlayersOfTheUsersAccount(): void
+    {
+        $user = $this->owner();
+
+        $userPlayer = PlayerFactory::new()->for($user->account)->create();
+        PlayerFactory::new()->create();
+
+        $this
+            ->actingAs($user)
+            ->get('api/players?per_page=10')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonPath('data', function ($data) use ($userPlayer) {
+                $this->assertCount(1, $data);
+
+                $this->assertEquals($userPlayer->id, $data[0]['id']);
+
+                return true;
+            });
+    }
+
     public function testItCreatesAPlayer(): void
     {
-        $team = TeamFactory::new()->create();
+        $admin = $this->admin();
+        $team = TeamFactory::new()->for($admin->account)->create();
 
         $payload = [
             'name' => 'Player A',
@@ -42,7 +63,7 @@ class PlayerControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($admin)
             ->post('api/players', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -54,10 +75,11 @@ class PlayerControllerTest extends TestCase
 
     public function testItShowsAPlayer(): void
     {
-        $player = PlayerFactory::new()->create();
+        $user = $this->admin();
+        $player = PlayerFactory::new()->for($user->account)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->get("api/players/{$player->id}")
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($player) {
@@ -67,7 +89,8 @@ class PlayerControllerTest extends TestCase
 
     public function testItUpdatesAPlayer(): void
     {
-        $player = PlayerFactory::new()->create();
+        $user = $this->admin();
+        $player = PlayerFactory::new()->for($user->account)->create();
 
         $payload = [
             'name' => 'Player A',
@@ -75,7 +98,7 @@ class PlayerControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->patch("api/players/{$player->id}", $payload)
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -87,10 +110,11 @@ class PlayerControllerTest extends TestCase
 
     public function testItDeletesAPlayer(): void
     {
-        $player = PlayerFactory::new()->create();
+        $user = $this->admin();
+        $player = PlayerFactory::new()->for($user->account)->create();
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->delete("api/players/{$player->id}")
             ->assertStatus(Response::HTTP_NO_CONTENT);
 

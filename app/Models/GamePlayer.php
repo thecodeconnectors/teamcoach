@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property int $game_id
  * @property int $player_id
- * @property int $team_id
  * @property GamePlayerType $type
  * @property Position $position
  * @property Player $player
@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class GamePlayer extends Model
 {
+    protected $table = 'game_player';
+
     protected $guarded = [];
 
     protected $casts = [

@@ -2,11 +2,21 @@
 
 namespace App\Http\Requests;
 
-use App\Modules\Partners\Models\Partner;
+use App\Traits\ChecksModelOwnership;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGameRequest extends FormRequest
 {
+    use ChecksModelOwnership;
+
+    public function authorize(): bool
+    {
+        $accountId = $this->user()->account_id;
+        $teamId = $this->get('team_id');
+
+        return $this->teamBelongsToAccount($accountId, $teamId);
+    }
+
     public function rules(): array
     {
         return [

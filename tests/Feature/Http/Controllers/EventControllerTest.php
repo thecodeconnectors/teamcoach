@@ -4,8 +4,10 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Enums\EventType;
 use App\Models\Event;
+use Database\Factories\EventFactory;
 use Database\Factories\GameFactory;
 use Database\Factories\PlayerFactory;
+use Database\Factories\TeamFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,8 +20,13 @@ class EventControllerTest extends TestCase
 
     public function testItCreatesAnEvent(): void
     {
-        $game = GameFactory::new()->create();
-        $player = PlayerFactory::new()->for($game->team)->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $opponent = TeamFactory::new()->for($user->account)->create();
+        $game = GameFactory::new()->for($user->account)->for($team, 'team')->for($opponent, 'opponent')->create();
+        $player = PlayerFactory::new()->for($user->account)->for($game->team)->create();
+
+        $game->addPlayer($player);
 
         $payload = [
             'type' => EventType::Goal->value,
@@ -29,7 +36,7 @@ class EventControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post('api/events', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -44,12 +51,15 @@ class EventControllerTest extends TestCase
 
     public function testItUpdatesAnEvent(): void
     {
-        $game = GameFactory::new()->create();
-        $player = PlayerFactory::new()->for($game->team)->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $opponent = TeamFactory::new()->for($user->account)->create();
+        $game = GameFactory::new()->for($user->account)->for($team, 'team')->for($opponent, 'opponent')->create();
+        $player = PlayerFactory::new()->for($user->account)->for($game->team)->create();
 
         $game->addPlayer($player);
 
-        $event = Event::query()->create([
+        $event = EventFactory::new()->for($user->account)->create([
             'type' => EventType::Goal->value,
             'player_id' => $player->id,
             'team_id' => $player->team_id,
@@ -58,12 +68,13 @@ class EventControllerTest extends TestCase
         ]);
 
         $payload = [
+            'game_id' => $game->id,
             'type' => EventType::YellowCard->value,
             'started_at' => now()->subMinutes(10),
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->patch("api/events/{$event->id}", $payload)
             ->assertStatus(Response::HTTP_OK);
 
@@ -79,8 +90,11 @@ class EventControllerTest extends TestCase
 
     public function testItDeletesAnEvent(): void
     {
-        $game = GameFactory::new()->create();
-        $player = PlayerFactory::new()->for($game->team)->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $opponent = TeamFactory::new()->for($user->account)->create();
+        $game = GameFactory::new()->for($user->account)->for($team, 'team')->for($opponent, 'opponent')->create();
+        $player = PlayerFactory::new()->for($user->account)->for($game->team)->create();
 
         $game->addPlayer($player);
 
@@ -93,10 +107,11 @@ class EventControllerTest extends TestCase
         ]);
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->delete("api/events/{$event->id}")
             ->assertStatus(Response::HTTP_NO_CONTENT);
 
         $this->assertDatabaseCount(Event::class, 0);
     }
+
 }

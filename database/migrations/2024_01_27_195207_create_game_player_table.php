@@ -3,7 +3,6 @@
 use App\Enums\GamePlayerType;
 use App\Models\Game;
 use App\Models\Player;
-use App\Modules\Partners\Models\Partner;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

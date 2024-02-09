@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Enums\GamePlayerType;
 use App\Models\Game;
 use App\Models\Team;
+use Database\Factories\GameFactory;
 use Database\Factories\PlayerFactory;
 use Database\Factories\TeamFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,10 +19,30 @@ class GameControllerTest extends TestCase
 {
     use RefreshDatabase, WithUsers;
 
+    public function testItOnlyListsGamesOfTheUsersAccount(): void
+    {
+        $user = $this->owner();
+
+        $userGame = GameFactory::new()->for($user->account)->create();
+        GameFactory::new()->create();
+
+        $this
+            ->actingAs($user)
+            ->get('api/games?per_page=10')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonPath('data', function ($data) use ($userGame) {
+                $this->assertCount(1, $data);
+                $this->assertEquals($userGame->id, $data[0]['id']);
+
+                return true;
+            });
+    }
+
     public function testItCreatesAGame(): void
     {
-        $team = TeamFactory::new()->create();
-        $players = PlayerFactory::new()->count(3)->for($team)->create();
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $players = PlayerFactory::new()->count(3)->for($user->account)->for($team)->create();
 
         $payload = [
             'team_id' => $team->id,
@@ -31,7 +52,7 @@ class GameControllerTest extends TestCase
         ];
 
         $this
-            ->actingAs($this->user())
+            ->actingAs($user)
             ->post('api/games', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload, $startAt) {
