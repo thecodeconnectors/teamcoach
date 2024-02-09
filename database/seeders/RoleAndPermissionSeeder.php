@@ -32,8 +32,8 @@ class RoleAndPermissionSeeder extends Seeder
     private function createRoles(): void
     {
         $this->userRole = Role::query()->firstOrCreate(['name' => RoleType::User->value], ['id' => 1, 'guard_name' => 'web']);
-        $this->ownerRole = Role::query()->firstOrCreate(['name' => RoleType::Owner->value], ['id' => 1, 'guard_name' => 'web']);
-        $this->adminRole = Role::query()->firstOrCreate(['name' => RoleType::Admin->value], ['id' => 2, 'guard_name' => 'web']);
+        $this->ownerRole = Role::query()->firstOrCreate(['name' => RoleType::Owner->value], ['id' => 2, 'guard_name' => 'web']);
+        $this->adminRole = Role::query()->firstOrCreate(['name' => RoleType::Admin->value], ['id' => 3, 'guard_name' => 'web']);
     }
 
     private function setupGamePermissions(): void
