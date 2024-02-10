@@ -9,7 +9,8 @@ class CsrfCookieController
 {
     public function show(Request $request): JsonResponse
     {
-        return (new JsonResponse(['cookie' => $request->getUserInfo()], 200))
-            ->header('Content-Type', 'application/json');
+        return response()->json([
+            'logo' => url((config('app.logo'))),
+        ]);
     }
 }

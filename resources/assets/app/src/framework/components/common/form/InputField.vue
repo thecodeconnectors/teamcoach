@@ -4,7 +4,18 @@
             {{ label }}
         </label>
         <div class="mt-1">
-            <input :id="id" ref="input" :value="modelValue" v-bind="$attrs" :type="type" :autocomplete="$attrs.autocomplete || (type === 'password' ? 'current-password' : id)" formnovalidate class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" @blur="onBlur" @input="onInput" @change="onChange" />
+            <input
+                :id="id"
+                ref="input"
+                :value="modelValue"
+                v-bind="$attrs"
+                :type="type"
+                :autocomplete="$attrs.autocomplete || (type === 'password' ? 'current-password' : id)" formnovalidate
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                @blur="onBlur"
+                @input="onInput"
+                @change="onChange"
+            />
 
             <div v-if="errors?.length" class="mt-1 text-xs text-red-600">
                 <template v-for="error in errors">{{ error }}</template>
@@ -14,7 +25,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import {computed} from 'vue';
 import {useStore} from '@/framework/store';
 
 const store = useStore();
@@ -52,12 +63,6 @@ const emit = defineEmits([
 const errors = computed(function () {
     return store.errors ? store.errors[props.id] : [];
 });
-
-const inputRef = ref(null);
-
-const focusInput = () => {
-    inputRef.value.focus();
-};
 
 const onBlur = event => {
     emit('inputBlur', event.target.value);

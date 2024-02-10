@@ -28,6 +28,14 @@
                                         {{ item.name }}
                                     </router-link>
                                 </div>
+                                <div class="py-4">
+                                    <router-link v-for="item in bottomNavigation" :key="item.name" :to="{ name: item.route }" :class="[item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900', 'group flex items-center px-2 py-2 text-sm font-medium rounded-md']">
+                                        <span class="h-6 w-8 text-center inline-block align-middle leading-relaxed">
+                                            <Icon :name="item.icon" :class="[item.current ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500', 'mr-3 flex-shrink-0']" aria-hidden="true" />
+                                        </span>
+                                        {{ item.name }}
+                                    </router-link>
+                                </div>
                             </nav>
                         </div>
                     </div>
@@ -47,7 +55,6 @@
                     <icon name="bars" class="text-xl" aria-hidden="true" />
                 </button>
                 <div class="flex-1 px-4 flex justify-between">
-
                     <div class="flex-1 flex items-center">
                         <AlertMessage v-if="alertMessage" :message="alertMessage" color="green" />
                     </div>
@@ -57,7 +64,6 @@
                             <Icon name="bell" class="h-6 w-6 mt-3" />
                             <span v-if="notificationCount" class="block w-2 h-2 transform translate-x-2 -translate-y-6 bg-red-600 rounded-full"></span>
                         </button>
-
                         <ProfileMenu />
                     </div>
                 </div>
@@ -111,6 +117,11 @@ let navigationGroups = computed(() => {
 
     return groups;
 });
+
+const bottomNavigation = computed(() => [
+    {name: 'Users', route: 'users', icon: 'users', current: fullPath.value.startsWith('/users')},
+    {name: 'Settings', route: 'settings', icon: 'cog', current: fullPath.value.startsWith('/settings')},
+]);
 
 if (import.meta.env.VUE_APP_PUSHER_APP_KEY?.length) {
     window.Echo.channel('messages').listen('MessageBroadcasted', (e) => {

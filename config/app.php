@@ -18,6 +18,8 @@ return [
 
     'name' => env('APP_NAME', 'Teamcoa.ch'),
 
+    'logo' => '/storage/logo/logo.svg',
+    
     /*
     |--------------------------------------------------------------------------
     | Application Environment

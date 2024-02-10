@@ -7,37 +7,29 @@
             <form role="form" @submit.prevent="savePlayer">
                 <div class="shadow sm:rounded-md sm:overflow-hidden">
                     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <InputField id="name" v-model="state.player.name" label="Name" />
-                        </div>
-                    </div>
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <DropDownSelect
-                                label="Preferred Position"
-                                v-if="state.positions"
-                                v-model="state.player.position"
-                                :options="state.positions"
-                            />
-                        </div>
-                    </div>
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <DropDownSelect
-                                label="Main Team"
-                                v-if="state.teams"
-                                v-model="state.player.team_id"
-                                :options="state.teams"
-                            />
-                        </div>
-                    </div>
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <label for="1707143111073" class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+
+                        <InputField id="name" v-model="state.player.name" label="Name" />
+
+                        <DropDownSelect
+                            label="Preferred Position"
+                            v-if="state.positions"
+                            v-model="state.player.position"
+                            :options="state.positions"
+                        />
+
+                        <DropDownSelect
+                            label="Main Team"
+                            v-if="state.teams"
+                            v-model="state.player.team_id"
+                            :options="state.teams"
+                        />
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
                             <div class="flex items-center">
-                                <span v-for="avatar in state.avatars">
-                                    <img :src="avatar.id" :alt="avatar.name" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" :width="state.player.avatar === avatar.name ? 64 : 32" @click="state.player.avatar = avatar.name" />
-                                </span>
+                            <span v-for="avatar in state.avatars">
+                                <img :src="avatar.id" :alt="avatar.name" class="mr-3 bg-blue-600 border-white border-2 rounded-full shadow" :width="state.player.avatar === avatar.name ? 64 : 32" @click="state.player.avatar = avatar.name" />
+                            </span>
                             </div>
                         </div>
                     </div>

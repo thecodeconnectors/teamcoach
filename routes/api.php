@@ -30,6 +30,8 @@ Route::get('cookie', [CsrfCookieController::class, 'show'])->name('cookie.show')
 Route::get('user', [CurrentUserController::class, 'show'])->name('user.show');
 
 Route::get('settings', [SettingsController::class, 'index']);
+Route::post('settings/{key}', [SettingsController::class, 'store'])->where('key', implode('|', array_keys(config('settings'))));
+
 Route::get('avatars', [AvatarController::class, 'index']);
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('game-player-types', [GamePlayerTypeController::class, 'index']);

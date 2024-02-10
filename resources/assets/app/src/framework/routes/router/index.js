@@ -26,17 +26,15 @@ export default async function configureRouter() {
         store.errors = null;
         store.flashMessage = null;
 
-        if (!store.settings) {
-            const {data: settings} = await getSettings();
-            store.setSettings(settings);
-        }
-
         if (!store.sessionStarted) {
-            await startSession().then(async () => {
+            await startSession().then(async response => {
+                store.setLogo(response.logo);
                 store.setSessionStarted();
-                await getUser().then(response => {
+                await getUser().then(async response => {
                     if (response.data) {
                         store.setUser(response.data);
+                        const {data: settings} = await getSettings();
+                        store.setSettings(settings);
                     }
                 });
             });

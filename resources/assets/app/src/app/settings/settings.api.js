@@ -4,6 +4,6 @@ export function getSettings() {
     return api.get('settings');
 }
 
-export function updateSettings(key, payload) {
-    return api.patch(`settings/${key}`, payload);
+export function storeSetting(key, payload) {
+    return api.post(`settings/${key}`, payload);
 }
