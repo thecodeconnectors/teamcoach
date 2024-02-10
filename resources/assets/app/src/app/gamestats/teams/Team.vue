@@ -5,8 +5,8 @@
     <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:grid-cols-12 lg:gap-8">
         <main class="col-span-12">
             <form role="form" @submit.prevent="saveTeam">
-                <div class="shadow sm:rounded-md sm:overflow-hidden">
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                <div class="sm:shadow sm:rounded-md sm:overflow-hidden">
+                    <div class="py-5 bg-white space-y-6 sm:p-6">
                         <div class="sm:col-span-6">
                             <InputField id="name" v-model="team.name" label="Name" />
                         </div>

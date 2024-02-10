@@ -18,10 +18,12 @@
             <td class="text-right">
                 <LiveSecondsToTimeString :enabled="timersEnabled" :seconds="player.playtime" class="text-xs" />
             </td>
-            <td class="text-right object-right">
-                <Icon v-if="editable" name="refresh" @click="openSwitchPlayerMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
-                <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
-                <Icon v-if="editable" name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
+            <td class="py-2">
+                <div class="w-full flex flex-row-reverse items-center">
+                    <Icon v-if="editable" name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
+                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
+                    <Icon v-if="editable" name="refresh" @click="openSwitchPlayerMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
+                </div>
             </td>
         </tr>
         </tbody>
@@ -44,10 +46,12 @@
             <td class="text-right">
                 <LiveSecondsToTimeString :enabled="false" :seconds="player.playtime" class="text-xs" />
             </td>
-            <td class="text-right object-right">
-                <Icon v-if="editable" name="refresh" @click="openSwitchPlayerMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
-                <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
-                <Icon v-if="editable" name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
+            <td class="py-2">
+                <div class="w-full flex flex-row-reverse items-center">
+                    <Icon v-if="editable" name="plus" @click="openPlayerMenu(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1" />
+                    <Icon name="chart-simple" @click="openPlayerEventList(player)" size="sm" class="rounded-full text-white bg-blue-600 p-1 mr-3" />
+                    <Icon v-if="editable" name="refresh" @click="openSwitchPlayerMenu(player)" size="sm" class="rounded-full text-blue-600 p-1 mr-3" />
+                </div>
             </td>
         </tr>
         </tfoot>

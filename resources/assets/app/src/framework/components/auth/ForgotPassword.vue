@@ -1,7 +1,7 @@
 <template>
     <Heading heading="Forgot Password" />
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div class="bg-white py-8 px-4 sm:shadow sm:rounded-lg sm:px-10">
             <FlashMessage />
             <form role="form" @submit.prevent="submitForm" class="space-y-6">
                 <InputField id="email" v-model="form.email" type="email" label="Email address" validation-rules="required|email|minlength:3|maxlength:150" />

@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="max-w-full h-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
-        <main>
+        <main class="overflow-y-scroll h-full pb-24">
             <div class="lg:shadow rounded-md overflow-y-auto sm:overflow-hidden">
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
                 <div class="bg-white space-y-6 lg:p-6">
@@ -20,7 +20,7 @@
                             :players="state.game.players"
                             :playing="playing"
                             :substitutes="substitutes"
-                            :editable="true"
+                            :editable="!state.game.is_finished"
                             :timers-enabled="state.game.is_playing"
                             :merge-players="state.game.is_finished"
                             @open-switch-player-menu="openSwitchPlayerMenu"
@@ -29,26 +29,26 @@
                     </div>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
-                <div class="col-span-3 p-3 text-center">
-                    <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
-                    <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
-                </div>
-                <div class="col-span-3 p-3 text-center align-middle">
-                    <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
-                    <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
-                </div>
-                <div class="col-span-3 p-3 text-center align-middle">
-                    <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
-                    <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
-                </div>
-                <div class="col-span-3 p-3 text-center align-middle">
-                    <button type="button" @click="state.showGameEvents = true">
-                        <Icon class="h-8 w-8 " name="chart-simple" />
-                    </button>
-                </div>
-            </div>
         </main>
+    </div>
+    <div class="sticky bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
+        <div class="col-span-3 p-3 text-center">
+            <InputButton v-if="!state.game.is_public" label="Publish" @click="state.showConfirmPublish = true" color="green" class="w-full" />
+            <InputButton v-if="state.game.is_public" label="Unpublish" @click="state.showConfirmUnpublish = true" color="green" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton v-if="!state.game.is_started" label="Start" @click="state.showConfirmStart = true" class="w-full" />
+            <InputButton v-if="state.game.is_started && !state.game.is_finished" label="Finish" color="red" @click="state.showConfirmFinish = true" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <InputButton v-if="state.game.is_started && !state.game.is_paused && !state.game.is_finished" label="Pause" @click="state.showConfirmPause = true" class="w-full" />
+            <InputButton v-if="state.game.is_paused && !state.game.is_finished" label="Resume" @click="state.showConfirmResume = true" class="w-full" />
+        </div>
+        <div class="col-span-3 p-3 text-center align-middle">
+            <button type="button" @click="state.showGameEvents = true">
+                <Icon class="h-8 w-8 " name="chart-simple" />
+            </button>
+        </div>
     </div>
     <SlideOver :title="`Substitute ${state.switchPlayer?.name}`"
                :open="state.switchPlayer !== null"

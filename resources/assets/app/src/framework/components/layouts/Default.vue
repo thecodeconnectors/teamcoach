@@ -70,7 +70,7 @@
             </div>
 
             <main class="flex-1 relative overflow-y-auto focus:outline-none">
-                <div class="pt-6 md:pb-6">
+                <div class="pt-6 md:pb-6 h-full">
                     <router-view></router-view>
                 </div>
             </main>

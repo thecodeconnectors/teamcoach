@@ -1,7 +1,7 @@
 <template>
     <div class="sm:overflow-hidden">
         <dl class="lg:shadow lg:rounded-md lg:overflow-hidden bg-white divide-y divide-gray-100">
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     Game
                 </dt>
@@ -15,7 +15,7 @@
                     {{ game.parts }}
                 </dd>
             </div>
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     Part duration
                 </dt>
@@ -29,7 +29,7 @@
                     {{ game.break_duration }} minutes
                 </dd>
             </div>
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     {{ game.started_at ? 'Started' : 'Start' }}
                 </dt>
@@ -43,7 +43,7 @@
                     {{ formatDate(game.finished_at) }}
                 </dd>
             </div>
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     Total time
                 </dt>
@@ -51,7 +51,7 @@
                     {{ game.total_time }}
                 </dd>
             </div>
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     Break time
                 </dt>
@@ -60,7 +60,7 @@
                 </dd>
             </div>
 
-            <div class="px-4 py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
+            <div class="py-6 grid grid-cols-2 sm:grid-cols-6 gap-4 sm:px-6">
                 <dt class="text-sm font-medium text-gray-900">
                     Played time
                 </dt>
