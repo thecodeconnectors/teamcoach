@@ -22,9 +22,12 @@ use Illuminate\Support\Str;
  * @property int $team_id
  * @property int $opponent_id
  * @property bool $is_public
+ * @property bool $is_away_game
+ * @property bool $is_home_game
  * @property null|string $url_secret
  * @property int $parts
  * @property int $part_duration
+ * @property int $break_duration
  * @property int $team_points
  * @property int $opponent_points
  * @property Team $team
@@ -54,6 +57,8 @@ class Game extends Model implements BelongsToAccount
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
         'is_public' => 'bool',
+        'is_away_game' => 'bool',
+        'is_home_game' => 'bool',
     ];
 
     protected static function booted(): void
@@ -96,6 +101,11 @@ class Game extends Model implements BelongsToAccount
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function getIsHomeGameAttribute(): bool
+    {
+        return !$this->is_away_game;
     }
 
     public function getSecondsElapsedAttribute(): int

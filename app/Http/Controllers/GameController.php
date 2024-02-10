@@ -57,7 +57,7 @@ class GameController extends Controller
             $game->opponent()->update(['name' => $opponentName]);
         }
 
-        foreach ($request->validated('players') as $player) {
+        foreach ((array)$request->validated('players') as $player) {
             $game->updatePlayer($player['id'], Position::tryFrom($player['position']), GamePlayerType::tryFrom($player['type']));
         }
 

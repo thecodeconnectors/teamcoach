@@ -30,6 +30,22 @@ class UpdateGameRequest extends FormRequest
                 'string',
                 'max:100',
             ],
+            'is_away_game' => [
+                'nullable',
+                'bool',
+            ],
+            'parts' => [
+                'nullable',
+                'integer',
+            ],
+            'part_duration' => [
+                'nullable',
+                'integer',
+            ],
+            'break_duration' => [
+                'nullable',
+                'integer',
+            ],
             'start_at' => [
                 'nullable',
                 'date',

@@ -7,23 +7,18 @@
             <form role="form" @submit.prevent="saveGame">
                 <div class="shadow sm:rounded-md sm:overflow-hidden">
                     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <DropDownSelect
-                                v-if="state.teams.length"
-                                v-model="state.game.team_id"
-                                :options="state.teams"
-                            />
-                        </div>
-                    </div>
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <InputField id="opponent_name" v-model="state.game.opponent_name" label="Opponent" />
-                        </div>
-                    </div>
-                    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                        <div class="sm:col-span-6">
-                            <InputField type="datetime-local" id="start_at" v-model="state.game.start_at" label="Start" />
-                        </div>
+                        <DropDownSelect
+                            label="Team"
+                            v-if="state.teams.length"
+                            v-model="state.game.team_id"
+                            :options="state.teams"
+                        />
+                        <InputField id="opponent_name" v-model="state.game.opponent_name" label="Opponent" />
+                        <Checkbox v-model="state.game.is_away_game" label="Is away game" id="is_away_game" />
+                        <InputField type="datetime-local" id="start_at" v-model="state.game.start_at" label="Start" />
+                        <InputField type="number" id="parts" v-model="state.game.parts" label="Parts" />
+                        <InputField type="number" id="part_duration" v-model="state.game.part_duration" label="Part duration" />
+                        <InputField type="number" id="break_duration" v-model="state.game.break_duration" label="Break duration" />
                     </div>
                     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                         <div class="sm:col-span-6">
@@ -76,6 +71,7 @@ import {computed, reactive} from 'vue';
 import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import {getTeams} from '@/app/gamestats/teams/teams.api.js';
+import Checkbox from '@/framework/components/common/form/Checkbox.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -97,6 +93,10 @@ const state = reactive({
         id: null,
         opponent_name: null,
         start_at: null,
+        is_away_game: false,
+        parts: 2,
+        part_duration: 45,
+        break_duration: 15,
         players: [],
     },
 });
@@ -158,6 +158,10 @@ const deleteCurrentGame = async () => {
 loadTeams();
 loadPositions();
 loadGamePlayerTypes();
+
+state.game.parts = store.settings.default_game_parts;
+state.game.part_duration = store.settings.default_part_duration;
+state.game.break_duration = store.settings.default_break_duration;
 
 if (isEditForm.value) {
     getGameById(props.id);

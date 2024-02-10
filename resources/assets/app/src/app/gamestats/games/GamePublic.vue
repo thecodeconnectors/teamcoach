@@ -19,10 +19,10 @@
     </div>
     <div class="absolute bottom-0 left-0 right-0 w-full grid grid-cols-12 divide-x flex-shrink-0 h-16 bg-white shadow-inner">
         <div class="col-span-3 p-3 text-center">
-            <InputButton label="Actions" @click="state.showTab = 'events'" class="w-full" />
+            <InputButton label="Players" @click="state.showTab = 'players'" class="w-full" />
         </div>
         <div class="col-span-3 p-3 text-center align-middle">
-            <InputButton label="Players" @click="state.showTab = 'players'" class="w-full" />
+            <InputButton label="Actions" @click="state.showTab = 'events'" class="w-full" />
         </div>
         <div class="col-span-3 p-3 text-center align-middle">
             <InputButton label="Game" @click="state.showTab = 'game'" class="w-full" />
@@ -58,7 +58,7 @@ const props = defineProps({
 
 const state = reactive({
     isLoading: false,
-    showTab: 'events',
+    showTab: 'players',
     game: {
         id: null,
         team_id: null,
