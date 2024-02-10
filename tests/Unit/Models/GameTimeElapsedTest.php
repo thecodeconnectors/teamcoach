@@ -17,8 +17,8 @@ class GameTimeElapsedTest extends TestCase
         $startedAt = Carbon::parse(TestCase::$now)->subSeconds($secondsElapsed);
         $game = new Game(['started_at' => $startedAt]);
 
-        $this->assertEquals($secondsElapsed, $game->seconds_elapsed);
-        $this->assertEquals($expected, $game->time_elapsed);
+        $this->assertEquals($secondsElapsed, $game->played_seconds);
+        $this->assertEquals($expected, $game->played_time);
     }
 
     public static function dataProvider(): array

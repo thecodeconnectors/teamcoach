@@ -14,19 +14,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $game_id
  * @property int|null $player_id
+ * @property int|null $other_player_id
  * @property int|null $team_id
  * @property EventType $type
  * @property Game $game
  * @property Player|null $player
+ * @property Player|null $otherPlayer
  * @property Team|null $team
  * @property Carbon $started_at
  * @property Carbon|null $finished_at
+ * @property Carbon $end_time
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
  *
  * @property int $seconds
  * @property int $second_in_game
- * @property string $time_elapsed
+ * @property string $played_time
  *
  */
 class Event extends Model implements BelongsToAccount
@@ -75,22 +78,41 @@ class Event extends Model implements BelongsToAccount
         return $this->belongsTo(Player::class);
     }
 
+    public function otherPlayer(): BelongsTo
+    {
+        // Secondary involved Player.
+        // For example when switching player.
+        return $this->belongsTo(Player::class, 'other_player_id');
+    }
+
+    public function getEndTimeAttribute(): Carbon
+    {
+        if ($this->finished_at) {
+            return $this->finished_at;
+        }
+
+        if ($this->game->finished_at) {
+            return $this->game->finished_at;
+        }
+
+        return now();
+    }
+
     public function getSecondsAttribute(): int
     {
         return $this->isDurationEventType()
-            ? (int)$this->started_at?->diffInSeconds($this->finished_at ?: now())
+            ? (int)$this->started_at?->diffInSeconds($this->end_time)
             : 0;
     }
 
     public function getSecondInGameAttribute(): int
     {
-        // deduct breaks
         return $this->game->started_at ? $this->started_at->diffInSeconds($this->game->started_at) : 0;
     }
 
     public function getTimeElapsedAttribute(): string
     {
-        return sprintf('%d:%d', $this->second_in_game / 3600, round($this->second_in_game / 60) % 60);
+        return secondsToTime($this->second_in_game);
     }
 
     public function isDurationEventType(): bool

@@ -37,12 +37,19 @@ use Illuminate\Support\Str;
  * @property Carbon $start_at
  * @property Carbon|null $started_at
  * @property Carbon|null $finished_at
+ * @property Carbon $end_time
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
  *
  * @property ?string $public_url
- * @property int $seconds_elapsed
- * @property string $time_elapsed
+ *
+ * @property int $total_seconds
+ * @property int $break_seconds
+ * @property int $played_seconds
+ *
+ * @property string $total_time
+ * @property string $played_time
+ * @property string $break_time
  */
 class Game extends Model implements BelongsToAccount
 {
@@ -108,23 +115,39 @@ class Game extends Model implements BelongsToAccount
         return !$this->is_away_game;
     }
 
-    public function getSecondsElapsedAttribute(): int
+    public function getEndTimeAttribute(): Carbon
     {
-        if ($this->started_at) {
-            return $this->started_at?->diffInSeconds($this->finished_at ?: now())
-                - $this->breaks()->sum('seconds');
-        }
-
-        return 0;
+        return $this->finished_at ?: now();
     }
 
-    public function getTimeElapsedAttribute(): string
+    public function getTotalSecondsAttribute(): int
     {
-        $hours = str_pad(intdiv($this->seconds_elapsed, 3600), 2, '0', STR_PAD_LEFT);
-        $minutes = str_pad(intdiv($this->seconds_elapsed % 3600, 60), 2, '0', STR_PAD_LEFT);
-        $seconds = str_pad($this->seconds_elapsed % 60, 2, '0', STR_PAD_LEFT);
+        return $this->started_at ? $this->end_time->diffInSeconds($this->started_at) : 0;
+    }
 
-        return $hours !== '00' ? "{$hours}:{$minutes}:{$seconds}" : "{$minutes}:{$seconds}";
+    public function getBreakSecondsAttribute(): int
+    {
+        return $this->breaks()->sum('seconds');
+    }
+
+    public function getPlayedSecondsAttribute(): int
+    {
+        return $this->total_seconds - $this->break_seconds;
+    }
+
+    public function getTotalTimeAttribute(): string
+    {
+        return secondsToTime($this->total_seconds);
+    }
+
+    public function getBreakTimeAttribute(): string
+    {
+        return secondsToTime($this->break_seconds);
+    }
+
+    public function getPlayedTimeAttribute(): string
+    {
+        return secondsToTime($this->played_seconds);
     }
 
     public function getPublicUrlAttribute(): ?string
@@ -230,16 +253,13 @@ class Game extends Model implements BelongsToAccount
     }
 
     /**
-     * Returns the playtime in seconds.
+     * Returns the playtime in seconds, with break time deducted
      *
      * @return int
      */
     public function playTime(): int
     {
-        $playTime = (int)$this->started_at?->diffInSeconds($this->finished_at);
-        $breakTime = $this->breaks()->sum('seconds');
-
-        return $playTime - $breakTime;
+        return (int)$this->started_at?->diffInSeconds($this->finished_at) - $this->break_seconds;
     }
 
     public function addTeamPlayers(): static
@@ -253,22 +273,29 @@ class Game extends Model implements BelongsToAccount
 
     public function addPlayer(Player $player, Carbon|string|null $dateTime = null, ?Position $position = null, ?GamePlayerType $type = GamePlayerType::Playing): static
     {
-        if ($this->isPlaying()) {
+        if ($this->isPlaying() && !$this->isPaused()) {
+            // Don't start a timer when the game is paused, or before the game is started,
+            // as this will result in duplicate time registrations:
+            // When we start or resume a game, we will start new timers for every player.
             $this->startPlayTimer($player, $dateTime ?: now());
         }
 
         return $this->updatePlayer($player, $position, $type);
     }
 
-    public function addSubstitute(Player $player, Carbon|string|null $dateTime = null, ?Position $position = null): static
+    public function addSubstitute(Player $playerA, Carbon|string|null $dateTime = null, ?Player $playerB = null): static
     {
         if ($this->isPlaying()) {
+            // We can always finish player timers even during paused games,
+            // as during breaks there are no running timers.
+            // We do always want to register the substitute event,
+            // as that is merely a registration of the event without end time.
             $dateTime = $dateTime ?: now();
-            $this->finishPlayTimer($player, $dateTime);
-            $this->saveSubstituteEvent($player, $dateTime);
+            $this->finishPlayTimer($playerA, $dateTime);
+            $this->saveSubstituteEvent($playerA, $dateTime, $playerB);
         }
 
-        return $this->updatePlayer($player, $position, GamePlayerType::Substitute);
+        return $this->updatePlayer($playerA, null, GamePlayerType::Substitute);
     }
 
     public function updatePlayer(Player|int $player, ?Position $position = null, ?GamePlayerType $type = GamePlayerType::Playing): static
@@ -302,10 +329,10 @@ class Game extends Model implements BelongsToAccount
     {
         if ($this->playerIsSubstitute($playerA) && $this->playerIsPlaying($playerB)) {
             $this->addPlayer($playerA, $dateTime);
-            $this->addSubstitute($playerB, $dateTime);
+            $this->addSubstitute($playerB, $dateTime, $playerA);
         } elseif ($this->playerIsSubstitute($playerB) && $this->playerIsPlaying($playerA)) {
             $this->addPlayer($playerB, $dateTime);
-            $this->addSubstitute($playerA, $dateTime);
+            $this->addSubstitute($playerA, $dateTime, $playerB);
         }
 
         $this->load(['players', 'events']);
@@ -366,14 +393,15 @@ class Game extends Model implements BelongsToAccount
             ]);
     }
 
-    private function saveSubstituteEvent(Player $player, Carbon|string $startedAt): void
+    private function saveSubstituteEvent(Player $playerA, Carbon|string $startedAt, ?Player $playerB = null): void
     {
         $this->events()
             ->create([
                 'type' => EventType::Substituted->value,
                 'account_id' => $this->account_id,
-                'player_id' => $player->id,
-                'team_id' => $player->team_id,
+                'player_id' => $playerA->id,
+                'other_player_id' => $playerB?->id,
+                'team_id' => $playerA->team_id,
                 'started_at' => $startedAt,
             ]);
     }

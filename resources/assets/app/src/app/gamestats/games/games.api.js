@@ -63,10 +63,10 @@ export function showPublicGame(urlSecret) {
     return api.get(`games/public/${urlSecret}`);
 }
 
-export function swtichPlayers(gameId, playerId, substituteId) {
-    return api.post(`games/${gameId}/switch-player`, {
-        player_id: playerId,
-        substitute_id: substituteId,
+export function swtichPlayers(gameId, playerIdA, playerIdB) {
+    return api.post(`games/${gameId}/switch-players`, {
+        player_id_a: playerIdA,
+        player_id_b: playerIdB,
     });
 }
 

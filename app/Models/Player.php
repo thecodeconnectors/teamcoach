@@ -43,37 +43,34 @@ class Player extends Model implements BelongsToAccount
         return $this->belongsTo(Team::class);
     }
 
-    public function playTimeForGame(int|Game $game): int
+    public function playtimeForGame(int|Game $game): int
     {
-        return $this
-            ->eventsForGame($game)
-            ->sum('seconds');
+        return $this->playtimeEventsForGame($game)->sum('seconds');
     }
 
-    public function goalsForGame(int|Game $game): Collection
+    public function playtimeEventsForGame(int|Game $game): Collection
     {
-        return $this
-            ->eventsForGame($game)
-            ->filter(fn (Event $event) => $event->type === EventType::Goal);
+        return $this->playerEventsForGame($game)->filter(fn (Event $event) => $event->type === EventType::PlayTime);
     }
 
-    public function cardsForGame(int|Game $game): Collection
+    public function breakEventsForGame(int|Game $game): Collection
     {
-        return $this
-            ->eventsForGame($game)
-            ->filter(fn (Event $event) => $event->type === EventType::YellowCard || $event->type === EventType::RedCard);
+        return $this->eventsForGame($game)->filter(fn (Event $event) => $event->type === EventType::GameBreak);
     }
 
-    public function eventsForGame(int|Game $game): Collection
+    public function playerEventsForGame(int|Game $game): Collection
+    {
+        return $this->eventsForGame($game)->filter(fn (Event $event) => $event->player_id === $this->id);
+    }
+
+    private function eventsForGame(int|Game $game): Collection
     {
         $gameId = $game instanceof Game ? $game->id : $game;
 
-        // todo move to GamePlayer
         return Cache::store('array')->rememberForever($this->id . $gameId . 'eventsForGame', function () use ($gameId) {
             return Event::query()
                 ->with('game')
                 ->where('game_id', $gameId)
-                ->where('player_id', $this->id)
                 ->get();
         });
     }

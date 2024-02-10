@@ -2,7 +2,9 @@
 
 namespace Feature\Http\Controllers;
 
+use App\Enums\EventType;
 use App\Enums\GamePlayerType;
+use App\Models\Event;
 use Database\Factories\GameFactory;
 use Database\Factories\PlayerFactory;
 use Database\Factories\TeamFactory;
@@ -25,14 +27,16 @@ class GamePlayControllerTest extends TestCase
         $game->addPlayer($playerA);
         $game->addSubstitute($playerB);
 
+        $game->start(TestCase::$now);
+
         $payload = [
-            'player_id' => $playerA->id,
-            'substitute_id' => $playerB->id,
+            'player_id_a' => $playerA->id,
+            'player_id_b' => $playerB->id,
         ];
 
         $this
             ->actingAs($user)
-            ->post("api/games/{$game->id}/switch-player", $payload);
+            ->post("api/games/{$game->id}/switch-players", $payload);
 
         $this->assertDatabaseHas('game_player', [
             'game_id' => $team->id,
@@ -44,6 +48,13 @@ class GamePlayControllerTest extends TestCase
             'game_id' => $team->id,
             'player_id' => $playerA->id,
             'type' => GamePlayerType::Substitute->value,
+        ]);
+
+        $this->assertDatabaseHas(Event::class, [
+            'game_id' => $team->id,
+            'player_id' => $playerA->id,
+            'other_player_id' => $playerB->id,
+            'type' => EventType::Substituted->value,
         ]);
     }
 }

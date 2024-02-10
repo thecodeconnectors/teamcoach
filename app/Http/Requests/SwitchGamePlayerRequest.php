@@ -12,29 +12,29 @@ class SwitchGamePlayerRequest extends FormRequest
     public function authorize(): bool
     {
         $accountId = $this->user()->account_id;
-        $playerId = $this->get('player_id');
-        $substituteId = $this->get('substitute_id');
+        $playerIdA = $this->get('player_id_a');
+        $playerIdB = $this->get('player_id_b');
         $game = $this->route('game');
 
         return $this->gameBelongsToAccount($accountId, $game->id)
-            && $this->playerBelongsToAccount($accountId, $playerId)
-            && $this->playerBelongsToAccount($accountId, $substituteId)
-            && $this->playerBelongsToGame($game->id, $playerId)
-            && $this->playerBelongsToGame($game->id, $substituteId);
+            && $this->playerBelongsToAccount($accountId, $playerIdA)
+            && $this->playerBelongsToAccount($accountId, $playerIdB)
+            && $this->playerBelongsToGame($game->id, $playerIdA)
+            && $this->playerBelongsToGame($game->id, $playerIdB);
     }
 
     public function rules(): array
     {
         return [
-            'player_id' => [
+            'player_id_a' => [
                 'required',
                 'integer',
                 'exists:players,id',
             ],
-            'substitute_id' => [
+            'player_id_b' => [
                 'required',
                 'integer',
-                'different:player_id',
+                'different:player_id_a',
                 'exists:players,id',
             ],
         ];

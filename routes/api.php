@@ -41,7 +41,7 @@ Route::post('games/{game}/publish', [GamePublishController::class, 'publish']);
 Route::post('games/{game}/unpublish', [GamePublishController::class, 'unpublish']);
 
 Route::get('games/{game}/play', [GamePlayController::class, 'show']);
-Route::post('games/{game}/switch-player', [GamePlayController::class, 'switch']);
+Route::post('games/{game}/switch-players', [GamePlayController::class, 'switch']);
 
 Route::post('games/{game}/start', [GameStopwatchController::class, 'start']);
 Route::post('games/{game}/finish', [GameStopwatchController::class, 'finish']);

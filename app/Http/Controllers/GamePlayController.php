@@ -21,13 +21,13 @@ class GamePlayController extends Controller
 
     public function switch(SwitchGamePlayerRequest $request, Game $game): GamePlayResource
     {
-        /** @var Player $player */
-        $player = $game->players()->findOrFail($request->validated('player_id'));
+        /** @var Player $playerA */
+        $playerA = $game->players()->findOrFail($request->validated('player_id_a'));
 
-        /** @var Player $substitute */
-        $substitute = $game->players()->findOrFail($request->validated('substitute_id'));
+        /** @var Player $playerB */
+        $playerB = $game->players()->findOrFail($request->validated('player_id_b'));
 
-        $game->substitutePlayer($player, $substitute, now());
+        $game->substitutePlayer($playerA, $playerB, now());
 
         return new GamePlayResource($game);
     }

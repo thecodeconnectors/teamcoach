@@ -14,9 +14,9 @@ class GamePlayerPlayTimeTest extends TestCase
     use RefreshDatabase, WithUsers;
 
     /**
-     * @dataProvider gamePlayTimeDataProvider
+     * @dataProvider gamePlayTimeSubstituteDataProvider
      */
-    public function testPlayerPlayTime(Carbon $gameStart = null, Carbon $gameFinish = null, array $substituteEvents = [], $expectedPlayTime = 0): void
+    public function testPlayerPlayTimeWithSubstitutes(Carbon $gameStart = null, Carbon $gameFinish = null, array $substituteEvents = [], $expectedPlayTime = 0): void
     {
         $game = GameFactory::new()->create();
         $player = PlayerFactory::new()->create();
@@ -40,10 +40,10 @@ class GamePlayerPlayTimeTest extends TestCase
             $game->finish($gameFinish);
         }
 
-        $this->assertEqualSeconds($expectedPlayTime, $player->playTimeForGame($game));
+        $this->assertEqualSeconds($expectedPlayTime, $player->playtimeForGame($game));
     }
 
-    public static function gamePlayTimeDataProvider(): array
+    public static function gamePlayTimeSubstituteDataProvider(): array
     {
         return [
             'game did not started' => [
@@ -115,6 +115,63 @@ class GamePlayerPlayTimeTest extends TestCase
                     ],
                 ],
                 'expectedPlayTime' => (30 * 60) - (10 * 60),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider gamePlayTimeBreaksDataProvider
+     */
+    public function testPlayerPlayTimeWithBreaks(Carbon $gameStart = null, Carbon $gameFinish = null, array $breaks = [], $expectedPlayTime = 0): void
+    {
+        $game = GameFactory::new()->create();
+        $player = PlayerFactory::new()->create();
+
+        $game->addPlayer($player);
+
+        if ($gameStart) {
+            $game->start($gameStart);
+        }
+
+        foreach ($breaks as $break) {
+            $game->pause($break['started_at']);
+            if ($break['finished_at']) {
+                $game->resume($break['finished_at']);
+            }
+        }
+
+        if ($gameFinish) {
+            $game->finish($gameFinish);
+        }
+
+        $this->assertEqualSeconds($expectedPlayTime, $player->playtimeForGame($game));
+    }
+
+    public static function gamePlayTimeBreaksDataProvider(): array
+    {
+        return [
+            'game did not started' => [
+                'gameStart' => null,
+                'gameFinish' => null,
+                'breaks' => [],
+                'expectedPlayTime' => 0,
+            ],
+            'played full game' => [
+                'gameStart' => Carbon::parse(TestCase::$now)->subMinutes(60),
+                'gameFinish' => Carbon::parse(TestCase::$now),
+                'breaks' => [],
+                'expectedPlayTime' => 60 * 60,
+            ],
+            'playing unfinished game, with 1 break' => [
+                'gameStart' => Carbon::parse(TestCase::$now)->subMinutes(60),
+                'gameFinish' => Carbon::parse(TestCase::$now),
+                'breaks' => [
+                    [
+                        'started_at' => Carbon::parse(TestCase::$now)->subMinutes(50),
+                        'finished_at' => Carbon::parse(TestCase::$now)->subMinutes(40),
+                    ],
+                ],
+                'expectedPlayTime' => (60 * 60) - (10 * 60),
             ],
         ];
     }

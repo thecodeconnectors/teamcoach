@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreignIdFor(Game::class);
             $table->foreignIdFor(Team::class)->nullable();
             $table->foreignIdFor(Player::class)->nullable();
+            $table->foreignIdFor(Player::class, 'other_player_id')->nullable();
             $table->timestamp('started_at');
             $table->timestamp('finished_at')->nullable();
             $table->timestamps();

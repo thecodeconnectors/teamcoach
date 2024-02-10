@@ -17,11 +17,13 @@
                 <div class="bg-white space-y-6 lg:p-6">
                     <div class="sm:col-span-6">
                         <GamePlayers
+                            :players="state.game.players"
                             :playing="playing"
                             :substitutes="substitutes"
                             :editable="true"
-                            @open-substite-menu="openSubstiteMenu"
-                            @open-player-event-list="openPlayerEventList"
+                            :timers-enabled="state.game.is_playing"
+                            :merge-players="state.game.is_finished"
+                            @open-switch-player-menu="openSwitchPlayerMenu"
                             @open-player-menu="openPlayerMenu"
                         />
                     </div>
@@ -48,14 +50,14 @@
             </div>
         </main>
     </div>
-    <SlideOver :title="`Substitute ${state.substitutePlayer?.name}`"
-               :open="state.substitutePlayer !== null"
-               @close="state.substitutePlayer = null;state.newPlayer = null"
+    <SlideOver :title="`Substitute ${state.switchPlayer?.name}`"
+               :open="state.switchPlayer !== null"
+               @close="state.switchPlayer = null;state.newPlayer = null"
                width-class="w-screen max-w-2xl">
         <div class="sm:overflow-hidden">
             <div class="bg-white space-y-6">
                 <div class="mb-3 font-bold">Select new player:</div>
-                <template v-for="player in substitutes" :key="player.id">
+                <template v-for="player in switchPlayerCandidates" :key="player.id">
                     <button
                         :class="['border rounded mb-2 p-2 w-full flex items-center justify-between', state.newPlayer?.id === player.id ? 'bg-blue-500 text-white shadow' : '']"
                         @click="state.newPlayer = player">
@@ -228,7 +230,7 @@ const state = reactive({
     showConfirmPublish: false,
     showConfirmUnpublish: false,
     showConfirmDeleteEvent: false,
-    substitutePlayer: null,
+    switchPlayer: null,
     newPlayer: null,
     focusPlayer: null,
     editEvent: null,
@@ -250,8 +252,8 @@ const state = reactive({
         started_at: null,
         finished_at: null,
 
-        seconds_elapsed: 0,
-        time_elapsed: '0:00',
+        played_seconds: 0,
+        played_time: '0:00',
 
         is_started: false,
         is_paused: false,
@@ -267,6 +269,7 @@ const state = reactive({
 const title = computed(() => 'Play Game');
 const playing = computed(() => state.game.players.filter(player => player.type === 'playing'));
 const substitutes = computed(() => state.game.players.filter(player => player.type === 'substitute'));
+const switchPlayerCandidates = computed(() => state.game.players.filter(player => player.type === (state.switchPlayer?.type === 'playing' ? 'substitute' : 'playing')));
 
 const loadPositions = async () => {
     const {data: positions} = await getPositions();
@@ -344,8 +347,8 @@ const openPublicGame = () => {
     window.open(url, '_blank');
 };
 
-const openSubstiteMenu = (player) => {
-    state.substitutePlayer = player;
+const openSwitchPlayerMenu = (player) => {
+    state.switchPlayer = player;
 };
 
 const openPlayerMenu = (player) => {
@@ -353,10 +356,10 @@ const openPlayerMenu = (player) => {
 };
 
 const switchPlayers = async () => {
-    const {data: game} = await swtichPlayers(state.game.id, state.newPlayer.id, state.substitutePlayer.id);
+    const {data: game} = await swtichPlayers(state.game.id, state.newPlayer.id, state.switchPlayer.id);
     state.game = game;
-    store.addToastMessage({title: `Player ${state.substitutePlayer.name} replaced with ${state.newPlayer.name}`});
-    state.substitutePlayer = null;
+    store.addToastMessage({title: `Player ${state.switchPlayer.name} replaced with ${state.newPlayer.name}`});
+    state.switchPlayer = null;
     state.newPlayer = null;
 };
 

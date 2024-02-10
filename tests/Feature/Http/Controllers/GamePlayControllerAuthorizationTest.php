@@ -33,12 +33,12 @@ class GamePlayControllerAuthorizationTest extends TestCase
         $game->addSubstitute($playerB);
 
         $payload = [
-            'player_id' => $playerA->id,
-            'substitute_id' => $playerB->id,
+            'player_id_a' => $playerA->id,
+            'player_id_b' => $playerB->id,
         ];
 
-        $response = $this->actingAs($user)->post("api/games/{$game->id}/switch-player", $payload);
-        $otherAccountResponse = $this->actingAs($user)->post("api/games/{$otherAccountGame->id}/switch-player", $payload);
+        $response = $this->actingAs($user)->post("api/games/{$game->id}/switch-players", $payload);
+        $otherAccountResponse = $this->actingAs($user)->post("api/games/{$otherAccountGame->id}/switch-players", $payload);
 
         $this->assertEquals($allow, $response->getStatusCode() !== Response::HTTP_FORBIDDEN, $response->getStatusCode());
 
@@ -78,13 +78,13 @@ class GamePlayControllerAuthorizationTest extends TestCase
         $game->addSubstitute($playerB);
 
         $payload = [
-            'player_id' => $playerA->id,
-            'substitute_id' => $playerB->id,
+            'player_id_a' => $playerA->id,
+            'player_id_b' => $playerB->id,
         ];
 
         $this
             ->actingAs($user)
-            ->post("api/games/{$game->id}/switch-player", $payload);
+            ->post("api/games/{$game->id}/switch-players", $payload);
 
         $this->assertDatabaseHas('game_player', [
             'game_id' => $team->id,

@@ -5,14 +5,22 @@
             <StatusBadges :game="state.game" />
         </div>
     </div>
-    <div class="max-w-full h-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
-        <main>
-            <div class="lg:shadow rounded-md overflow-y-auto sm:overflow-hidden">
+    <div class="max-w-full overflow-hidden h-full mx-auto px-4 sm:px-6 md:px-8 pt-6 lg:grid lg:gap-8">
+        <main class="overflow-y-scroll h-full pb-24">
+            <div class="lg:shadow rounded-md ">
                 <ScoreBoard :game="state.game" :timersEnabled="state.timersEnabled" />
-            </div>
-            <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 pt-6">
                 <GameEvents v-if="state.showTab ==='events'" :game="state.game" />
-                <GamePlayers v-if="state.showTab ==='players'" :playing="playing" :substitutes="substitutes" :editable="false" />
+                <div class="bg-white w-full px-4 py-6 sm:px-6">
+                    <GamePlayers
+                        v-if="state.showTab ==='players'"
+                        :players="state.game.players"
+                        :playing="playing"
+                        :substitutes="substitutes"
+                        :editable="false"
+                        :timers-enabled="state.game.is_playing"
+                        :merge-players="state.game.is_finished"
+                    />
+                </div>
                 <GameInfo v-if="state.showTab ==='game'" :game="state.game" />
             </div>
         </main>
@@ -74,8 +82,8 @@ const state = reactive({
         started_at: null,
         finished_at: null,
 
-        seconds_elapsed: 0,
-        time_elapsed: '0:00',
+        played_seconds: 0,
+        played_time: '0:00',
 
         is_started: false,
         is_paused: false,
@@ -112,7 +120,9 @@ const stopTimers = () => {
 };
 
 setInterval(() => {
-    getGame(props.urlSecret);
+    if (!state.game.is_finished) {
+        getGame(props.urlSecret);
+    }
 }, 10 * 1000);
 
 getGame(props.urlSecret);

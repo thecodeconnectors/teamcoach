@@ -19,3 +19,12 @@ function frontendUrl($path = null, $parameters = []): UrlGenerator|string
         return $urlGenerator->to($path, $parameters, $secure);
     });
 }
+
+function secondsToTime(int $totalSeconds = 0): string
+{
+    $hours = str_pad(intdiv($totalSeconds, 3600), 2, '0', STR_PAD_LEFT);
+    $minutes = str_pad(intdiv($totalSeconds % 3600, 60), 2, '0', STR_PAD_LEFT);
+    $seconds = str_pad($totalSeconds % 60, 2, '0', STR_PAD_LEFT);
+
+    return $hours !== '00' ? "{$hours}:{$minutes}:{$seconds}" : "{$minutes}:{$seconds}";
+}
