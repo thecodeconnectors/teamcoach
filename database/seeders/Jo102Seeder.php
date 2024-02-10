@@ -28,11 +28,6 @@ class Jo102Seeder extends Seeder
         ]);
 
         $team->createPlayer([
-            'name' => 'Pieter',
-            'position' => Position::Attack,
-            'avatar' => $avatars[0],
-        ]);
-        $team->createPlayer([
             'name' => 'Levi',
             'position' => Position::Attack,
             'avatar' => $avatars[1],
