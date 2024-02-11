@@ -1,6 +1,5 @@
-const colors = require('tailwindcss/colors');
-
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
     content: [
         './public/**/*.html',
         './src/**/*.vue',
