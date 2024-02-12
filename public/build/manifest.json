@@ -1,0 +1,12 @@
+{
+  "resources/assets/web/css/app.css": {
+    "file": "assets/app-iZM-MRTD.css",
+    "src": "resources/assets/web/css/app.css",
+    "isEntry": true
+  },
+  "resources/assets/web/js/app.js": {
+    "file": "assets/app-l0sNRNKZ.js",
+    "src": "resources/assets/web/js/app.js",
+    "isEntry": true
+  }
+}
