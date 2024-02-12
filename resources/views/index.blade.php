@@ -38,7 +38,7 @@
             <a href="#" class="text-sm font-semibold leading-6 text-white">Pricing</a>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="{{ config('app.frontend_url') }}" class="text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></a>
+            <a href="{{ frontendUrl('') }}" class="text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></a>
         </div>
     </nav>
     <!-- Mobile menu, show/hide based on menu open state. -->
@@ -66,7 +66,7 @@
                         <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Pricing</a>
                     </div>
                     <div class="py-6">
-                        <a href="{{ config('app.frontend_url') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">
+                        <a href="{{ frontendUrl('') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">
                             Log in
                         </a>
                     </div>
@@ -88,7 +88,7 @@
             <p class="mt-6 text-lg leading-8 text-gray-300">No more discussions about playtime of your players!</p>
             <p class="mt-6 text-lg leading-8 text-gray-300">Made for soccer, (but works for every teamsport)!</p>
             <div class="mt-10 flex items-center justify-center gap-x-6">
-                <a href="{{ config('app.frontend_url') }}" class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">Get started for free!</a>
+                <a href="{{ frontendUrl('auth/register') }}" class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">Get started for free!</a>
                 <a href="#" class="hidden text-sm font-semibold leading-6 text-white">Learn more <span aria-hidden="true">→</span></a>
             </div>
         </div>
