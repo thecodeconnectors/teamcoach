@@ -5,7 +5,7 @@
     <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 md:pt-6">
         <div class="flex items-center mb-6 w-full">
             <Search :debounce-timeout="400" @onSearch="doSearch" class="mr-auto self-start" />
-            <ButtonLink link-text="Add" link-url="/users/create" icon="plus-circle" />
+            <ButtonLink v-if="hasPermission('team.create')" link-text="Add" link-url="/users/create" icon="plus-circle" />
         </div>
 
         <CustomTable
@@ -29,7 +29,10 @@ import {getUsers} from './users.api.js';
 import Search from '@/framework/components/common/search/Search.vue';
 import ButtonLink from '@/framework/components/common/button-link/ButtonLink.vue';
 import CustomTable from '@/framework/components/common/table/CustomTable.vue';
+import {useAuth} from '@/framework/composables/use-auth.js';
+import {formatDate} from '@/framework/helpers.js';
 
+const {hasPermission} = useAuth();
 const router = useRouter();
 const table = reactive({
     isLoading: false,
@@ -45,14 +48,10 @@ const table = reactive({
             sortable: true,
         },
         {
-            field: 'post_count',
-            label: 'Posts',
-            sortable: false,
-        },
-        {
-            field: 'average_word_count',
-            label: 'Avg Word Count',
-            sortable: false,
+            field: 'email_verified_at',
+            label: 'Email verified at',
+            sortable: true,
+            displayValue: row => formatDate(row.email_verified_at)
         },
     ],
     rows: [],

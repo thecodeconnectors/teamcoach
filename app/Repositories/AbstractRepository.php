@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Filters\Contracts\Filters;
+use App\Traits\LimitResultsByAccount;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 
 abstract class AbstractRepository
 {
+    use LimitResultsByAccount;
+
     protected ?int $perPage = 10;
 
     protected ?User $user = null;

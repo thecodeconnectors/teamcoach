@@ -48,11 +48,12 @@
                             </table>
                         </div>
                     </div>
+
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-                        <InputButton v-if="isEditForm" type="button" label="Delete" color="white" text-color="gray-600" @click="state.showConfirmDelete = true" />
+                        <InputButton v-if="isEditForm && hasPermission('game.delete')" type="button" label="Delete" color="white" text-color="gray-600" @click="state.showConfirmDelete = true" />
                         <span v-else></span>
-                        <InputButton v-if="isEditForm" type="button" label="Start" @click="startGame" />
-                        <InputButton :is-loading="state.isLoading" type="submit" label="Save" />
+                        <InputButton v-if="isEditForm && hasPermission('game.update')" type="button" label="Start" @click="startGame" />
+                        <InputButton v-if="(isEditForm && hasPermission('game.update')) || hasPermission('game.create')" :is-loading="state.isLoading" type="submit" label="Save" />
                     </div>
                 </div>
             </form>
@@ -72,7 +73,9 @@ import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import {getTeams} from '@/app/gamestats/teams/teams.api.js';
 import Checkbox from '@/framework/components/common/form/Checkbox.vue';
+import {useAuth} from '@/framework/composables/use-auth.js';
 
+const {hasPermission} = useAuth();
 const store = useStore();
 const router = useRouter();
 

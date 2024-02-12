@@ -12,7 +12,7 @@ class TeamPolicy
     {
         return $user->hasRole(RoleType::Admin->value) ?: null;
     }
-    
+
     public function viewAny(User $user): bool
     {
         return $user->hasPermissionTo('team.viewAny');
@@ -25,7 +25,7 @@ class TeamPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('team.create');
+        return $user->hasPermissionTo('team.create') && $user->account->plan()->canCreateTeams();
     }
 
     public function update(User $user, Team $team): bool

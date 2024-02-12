@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Contract\BelongsToAccount;
+use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
 use App\Traits\HasProfilePicture;
 use Carbon\Carbon;
+use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -27,9 +30,17 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $gravatar
  * @property string $profile_picture
  */
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmailContract, BelongsToAccount
 {
-    use HasApiTokens, Notifiable, HasPermissions, HasRoles, SoftDeletes, HasProfilePicture, HasAccount;
+    use HasRoles;
+    use HasAccount;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApiTokens;
+    use FiltersRecords;
+    use HasPermissions;
+    use MustVerifyEmail;
+    use HasProfilePicture;
 
     protected $guarded = [];
 
@@ -46,5 +57,22 @@ class User extends Authenticatable
     public function owns(BelongsToAccount $model): bool
     {
         return $model->account_id === $this->account_id;
+    }
+
+    public function getPlanCorrectedPermissions(): Collection
+    {
+        $permissions = $this->getAllPermissions();
+
+        $exclude = [];
+
+        if (!$this->account->plan()->canCreateTeams()) {
+            $exclude[] = 'team.create';
+        }
+
+        if (!$this->account->plan()->canCreateUsers()) {
+            $exclude[] = 'user.create';
+        }
+
+        return $exclude ? $permissions->whereNotIn('name', $exclude) : $permissions;
     }
 }

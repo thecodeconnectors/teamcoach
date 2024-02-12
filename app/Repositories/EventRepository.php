@@ -15,7 +15,7 @@ class EventRepository extends AbstractRepository
 
     public function query(): Builder
     {
-        return Event::filterBy($this->filters);
+        return $this->limitByAccountWhenNeeded(Event::filterBy($this->filters));
     }
 
     public function store(array $attributes): Event

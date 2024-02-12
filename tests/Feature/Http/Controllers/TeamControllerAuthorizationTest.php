@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Modules\Users\Enums\RoleType;
 use Database\Factories\TeamFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\WithUsers;
@@ -14,13 +15,19 @@ class TeamControllerAuthorizationTest extends TestCase
 {
     use RefreshDatabase, WithUsers;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Config::set('plans.free.teams', 2);
+    }
+
     /**
      * @dataProvider roleDataProvider
      */
     public function testCreateTeamAuthorization(RoleType $role, bool $allow): void
     {
         $user = $this->userWithRole($role);
-
         $payload = [
             'name' => 'Team A',
         ];
@@ -107,5 +114,19 @@ class TeamControllerAuthorizationTest extends TestCase
                 'allowOtherAccount' => true,
             ],
         ];
+    }
+
+    public function testCreateTeamOutsidePlanAuthorization(): void
+    {
+        Config::set('plans.free.teams', 1);
+
+        $user = $this->userWithRole(RoleType::Owner);
+
+        TeamFactory::new()->create();
+
+        $response = $this->actingAs($user)->post('api/teams');
+
+        $this->assertFalse($user->can('create', Team::class));
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
 }

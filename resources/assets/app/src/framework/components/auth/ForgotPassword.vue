@@ -25,6 +25,9 @@ import FlashMessage from '@/framework/components/common/alerts/FlashMessage.vue'
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import {ref} from 'vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
+import {useStore} from '@/framework/store/index.js';
+
+const store = useStore();
 
 const form = ref({});
 let isLoading = false;
@@ -32,7 +35,8 @@ let isLoading = false;
 const submitForm = async () => {
     isLoading = true;
     try {
-        await sendPasswordResetLink(form.value);
+        const {message} = await sendPasswordResetLink(form.value);
+        store.setFlashMessage({text: message});
     } catch (error) {
         isLoading = false;
     } finally {

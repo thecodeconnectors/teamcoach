@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Filters\PlayerFilter;
 use App\Models\Player;
-use App\Modules\Users\Enums\RoleType;
 use Illuminate\Database\Eloquent\Builder;
 
 class PlayerRepository extends AbstractRepository
@@ -16,10 +15,7 @@ class PlayerRepository extends AbstractRepository
 
     public function query(): Builder
     {
-        return Player::filterBy($this->filters)
-            ->when(!$this->user()?->hasRole(RoleType::Admin->value), function (Builder $builder) {
-                $builder->where('account_id', $this->user()?->account_id);
-            });
+        return $this->limitByAccountWhenNeeded(Player::filterBy($this->filters));
     }
 
     public function store(array $attributes): Player

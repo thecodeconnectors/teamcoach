@@ -60,6 +60,11 @@ enum EventType: string
     case Corner = 'corner';
 
     /**
+     * Offside
+     */
+    case Offside = 'offside';
+
+    /**
      * Foul of a Player.
      */
     case Foul = 'foul';

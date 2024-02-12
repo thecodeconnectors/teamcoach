@@ -26,6 +26,11 @@ import Checkbox from '@/framework/components/common/form/Checkbox.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
 import {ref} from 'vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
+import {useStore} from '@/framework/store/index.js';
+import {useRouter} from 'vue-router';
+
+const router = useRouter();
+const store = useStore();
 
 const form = ref({});
 let isLoading = false;
@@ -35,5 +40,8 @@ const submitForm = async () => {
     await api.post('register', form.value).catch(() => {
         isLoading = false;
     });
+
+    store.setFlashMessage({title: 'Email verification link sent to ' + form.email});
+    await router.push({name: 'auth.login'});
 };
 </script>

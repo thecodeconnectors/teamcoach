@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EventType;
 use App\Http\Resources\EventTypeResource;
+use Illuminate\Http\Request;
 
 class PlayerActionEventTypeController extends Controller
 {
-    public function index(): EventTypeResource
+    public function index(Request $request): EventTypeResource
     {
-        return new EventTypeResource(EventType::playerActionEventTypes());
+        return new EventTypeResource($request->user()->account->plan()->playerActionEventTypes());
     }
 }

@@ -107,7 +107,7 @@ class Game extends Model implements BelongsToAccount
 
     public function events(): HasMany
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(Event::class)->latest('started_at');
     }
 
     public function getIsHomeGameAttribute(): bool

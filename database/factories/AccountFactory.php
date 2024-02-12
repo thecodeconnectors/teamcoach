@@ -14,7 +14,9 @@ class AccountFactory extends Factory
 
     public function definition(): array
     {
-        return [];
+        return [
+            'plan' => 'free',
+        ];
     }
 
 }

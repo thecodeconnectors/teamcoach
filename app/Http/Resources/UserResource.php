@@ -14,10 +14,13 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'account_id' => $this->account_id,
             'name' => $this->name,
             'email' => $this->email,
             'avatar' => $this->avatar,
             'profile_picture' => $this->profile_picture,
+            'email_verified_at' => $this->email_verified_at,
+            'permissions' => PermissionResource::collection($this->getPlanCorrectedPermissions()),
         ];
     }
 }

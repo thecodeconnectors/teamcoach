@@ -30,8 +30,16 @@ api.interceptors.response.use(
         return response.data;
     },
     error => {
+
         if (error.response?.status === 419) {
             window.location.reload();
+        }
+
+        if (!window.location.href.toLowerCase().includes('verified') && error.response?.status === 403) {
+            const message = error.response.data.message;
+            if (message.toLowerCase().includes('verified')) {
+                window.location = '/auth/verified';
+            }
         }
 
         if (error.response?.status === 422) {

@@ -35,9 +35,9 @@
                     </div>
 
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-                        <InputButton v-if="isEditForm" type="button" label="Delete" color="white" text-color="gray-600" @click="state.showConfirmDelete = true" />
+                        <InputButton v-if="isEditForm && hasPermission('player.delete')" type="button" label="Delete" color="white" text-color="gray-600" @click="showConfirmDelete = true" />
                         <span v-else></span>
-                        <InputButton :is-loading="state.isLoading" type="submit" label="Save" />
+                        <InputButton v-if="(isEditForm && hasPermission('player.update')) || hasPermission('player.create')" :is-loading="isLoading" type="submit" label="Save" />
                     </div>
                 </div>
             </form>
@@ -57,7 +57,9 @@ import {getPositions} from '@/app/gamestats/positions/positions.api.js';
 import DropDownSelect from '@/framework/components/common/form/DropDownSelect.vue';
 import {getAvatars} from '@/app/gamestats/avatars/avatars.api.js';
 import {getTeams} from '@/app/gamestats/teams/teams.api.js';
+import {useAuth} from '@/framework/composables/use-auth.js';
 
+const {hasPermission} = useAuth();
 const store = useStore();
 const router = useRouter();
 

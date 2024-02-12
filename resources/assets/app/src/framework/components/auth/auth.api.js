@@ -19,3 +19,7 @@ export function getUser() {
 export function sendPasswordResetLink(payload) {
     return api.post('forgot-password', payload);
 }
+
+export function resetPassword(payload) {
+    return api.post('reset-password', payload);
+}

@@ -13,9 +13,9 @@
                     </div>
 
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-                        <InputButton v-if="isEditForm" type="button" label="Delete" color="white" text-color="gray-600" @click="showConfirmDelete = true" />
+                        <InputButton v-if="isEditForm && hasPermission('team.delete')" type="button" label="Delete" color="white" text-color="gray-600" @click="showConfirmDelete = true" />
                         <span v-else></span>
-                        <InputButton :is-loading="isLoading" type="submit" label="Save" />
+                        <InputButton v-if="(isEditForm && hasPermission('team.update')) || hasPermission('team.create')" :is-loading="isLoading" type="submit" label="Save" />
                     </div>
                 </div>
             </form>
@@ -31,7 +31,9 @@ import Confirm from '@/framework/components/common/modals/Confirm.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
 import {computed, ref} from 'vue';
+import {useAuth} from '@/framework/composables/use-auth.js';
 
+const {hasPermission} = useAuth();
 const store = useStore();
 const router = useRouter();
 

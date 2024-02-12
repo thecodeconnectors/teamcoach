@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
+ * @property string $plan
  * @property Collection<User> $users
  * @property Collection<Team> $teams
  * @property Collection<Player> $players
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Account extends Model
 {
     protected $table = 'users_accounts';
+
+    protected $guarded = [];
 
     protected static function booted(): void
     {
@@ -59,4 +62,8 @@ class Account extends Model
         return $this->hasMany(Event::class);
     }
 
+    public function plan(): Plan
+    {
+        return new Plan($this->plan);
+    }
 }

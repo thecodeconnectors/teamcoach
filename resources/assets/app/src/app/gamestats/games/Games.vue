@@ -5,7 +5,7 @@
     <div class="max-w-full mx-auto px-4 sm:px-6 md:px-8 md:pt-6">
         <div class="flex items-center mb-6 w-full">
             <Search :debounce-timeout="400" @onSearch="doSearch" class="mr-auto self-start" />
-            <ButtonLink link-text="Add" link-url="/games/create" icon="plus-circle" />
+            <ButtonLink v-if="hasPermission('game.create')" link-text="Add" link-url="/games/create" icon="plus-circle" />
         </div>
         <CustomTable
             :columns="table.columns"
@@ -29,7 +29,9 @@ import {getGames} from './games.api.js';
 import Search from '@/framework/components/common/search/Search.vue';
 import ButtonLink from '@/framework/components/common/button-link/ButtonLink.vue';
 import CustomTable from '@/framework/components/common/table/CustomTable.vue';
+import {useAuth} from '@/framework/composables/use-auth.js';
 
+const {hasPermission} = useAuth();
 const router = useRouter();
 const table = reactive({
     isLoading: false,
