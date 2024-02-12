@@ -5,7 +5,7 @@
                 <img width="80" height="80" class="logo h-10 -mt-1 w-auto block" :src="store.logo" />
             </div>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
             {{ heading }}
         </h2>
     </div>
