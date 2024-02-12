@@ -33,9 +33,9 @@
             </button>
         </div>
         <div class="hidden lg:flex lg:hidden lg:gap-x-12">
-            <a href="#" class="text-sm font-semibold leading-6 text-white">Product</a>
-            <a href="#" class="text-sm font-semibold leading-6 text-white">Features</a>
-            <a href="#" class="text-sm font-semibold leading-6 text-white">Pricing</a>
+            <a href="#" rel="nofollow" class="text-sm font-semibold leading-6 text-white">Product</a>
+            <a href="#" rel="nofollow" class="text-sm font-semibold leading-6 text-white">Features</a>
+            <a href="#" rel="nofollow" class="text-sm font-semibold leading-6 text-white">Pricing</a>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
             <a href="{{ frontendUrl('') }}" class="text-sm font-semibold leading-6 text-white">Log in <span aria-hidden="true">&rarr;</span></a>
@@ -61,9 +61,9 @@
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/25">
                     <div class="space-y-2 py-6">
-                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Product</a>
-                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Features</a>
-                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Pricing</a>
+                        <a href="#" rel="nofollow" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Product</a>
+                        <a href="#" rel="nofollow" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Features</a>
+                        <a href="#" rel="nofollow" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800">Pricing</a>
                     </div>
                     <div class="py-6">
                         <a href="{{ frontendUrl('') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">
@@ -97,7 +97,7 @@
         <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
     </div>
 </div>
-
+<div class="w-full border-t border-8 border-gray-800"></div>
 <div class="py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="mx-auto max-w-2xl lg:mx-0">
@@ -162,6 +162,13 @@
                 <dd class="inline">Collect player statistics and export player data (coming soon...).</dd>
             </div>
         </dl>
+    </div>
+    <div class="mx-auto max-w-2xl pt-16">
+        <div class="text-center">
+            <div class="mt-10 flex items-center justify-center">
+                <a href="{{ frontendUrl('auth/register') }}" class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">Get started for free!</a>
+            </div>
+        </div>
     </div>
 </div>
 
