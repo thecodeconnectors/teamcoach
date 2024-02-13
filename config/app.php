@@ -19,7 +19,7 @@ return [
     'name' => env('APP_NAME', 'Teamcoa.ch'),
 
     'logo' => '/storage/logo/logo.svg',
-    
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -164,6 +164,7 @@ return [
          * Package Service Providers...
          */
         App\Providers\FortifyServiceProvider::class,
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
 
         /*
          * Application Service Providers...
