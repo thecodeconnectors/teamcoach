@@ -21,13 +21,13 @@
 <script setup>
 import Heading from '@/framework/components/auth/Heading.vue';
 import Link from '@/framework/components/auth/Link.vue';
-import api from '@/framework/api';
 import Checkbox from '@/framework/components/common/form/Checkbox.vue';
 import InputField from '@/framework/components/common/form/InputField.vue';
 import {ref} from 'vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import {useStore} from '@/framework/store/index.js';
 import {useRouter} from 'vue-router';
+import {register} from '@/framework/components/auth/auth.api.js';
 
 const router = useRouter();
 const store = useStore();
@@ -37,11 +37,16 @@ let isLoading = false;
 
 const submitForm = async () => {
     isLoading = true;
-    await api.post('register', form.value).catch(() => {
+    try {
+        const {message} = await register(form.value);
+        store.setFlashMessage({text: message});
+        await router.push({name: 'auth.login'});
+    } catch (error) {
         isLoading = false;
-    });
-
-    store.setFlashMessage({title: 'Email verification link sent to ' + form.email});
-    await router.push({name: 'auth.login'});
+    } finally {
+        form.value = {};
+        isLoading = false;
+    }
 };
+
 </script>

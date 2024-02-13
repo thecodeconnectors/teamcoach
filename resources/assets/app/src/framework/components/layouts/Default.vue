@@ -49,7 +49,7 @@
         <Sidebar :navigationGroups="navigationGroups" />
 
         <div class="flex flex-col w-0 flex-1 overflow-hidden">
-            <div class="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
+            <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b">
                 <button @click="sidebarOpen = true" type="button" class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden">
                     <span class="sr-only">Open sidebar</span>
                     <icon name="bars" class="text-xl" aria-hidden="true" />

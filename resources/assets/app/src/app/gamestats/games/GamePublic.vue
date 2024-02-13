@@ -17,7 +17,7 @@
                         :playing="playing"
                         :substitutes="substitutes"
                         :editable="false"
-                        :timers-enabled="state.game.is_playing"
+                        :timers-enabled="state.game.is_playing && !state.game.is_paused"
                         :merge-players="state.game.is_finished"
                     />
                 </div>

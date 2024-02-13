@@ -1,5 +1,9 @@
 import api from '@/framework/api/index.js';
 
+export function register(payload) {
+    return api.post('register', payload);
+}
+
 export function login(payload) {
     return api.post('login', payload);
 }
