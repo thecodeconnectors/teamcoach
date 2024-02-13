@@ -43,9 +43,6 @@ const submitForm = async () => {
         await router.push({name: 'auth.login'});
     } catch (error) {
         isLoading = false;
-    } finally {
-        form.value = {};
-        isLoading = false;
     }
 };
 
