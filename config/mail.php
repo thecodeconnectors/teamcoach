@@ -112,6 +112,10 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'global_bcc' => [
+        env('GLOBAL_BCC_ADDRESS', env('MAIL_FROM_ADDRESS')),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings
