@@ -13,6 +13,21 @@
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="theme-color" content="#ffffff">
     @vite(['resources/assets/web/css/app.css', 'resources/assets/web/js/app.js'])
+
+    @if(app()->isProduction())
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCPPTTX6B8"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+
+            gtag('js', new Date());
+
+            gtag('config', 'G-VCPPTTX6B8');
+        </script>
+    @endif
 </head>
 <body class="bg-gray-900">
 
