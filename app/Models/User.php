@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contract\BelongsToAccount;
+use App\Modules\Attendance\Traits\Attendee;
 use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
 use App\Traits\HasProfilePicture;
@@ -32,6 +33,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable implements MustVerifyEmailContract, BelongsToAccount
 {
+    use Attendee;
     use HasRoles;
     use HasAccount;
     use Notifiable;

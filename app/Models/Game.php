@@ -6,6 +6,7 @@ use App\Contract\BelongsToAccount;
 use App\Enums\EventType;
 use App\Enums\GamePlayerType;
 use App\Enums\Position;
+use App\Modules\Attendance\Traits\Attendable;
 use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
 use Carbon\Carbon;
@@ -56,6 +57,7 @@ class Game extends Model implements BelongsToAccount
     use SoftDeletes;
     use HasAccount;
     use FiltersRecords;
+    use Attendable;
 
     protected $guarded = [];
 

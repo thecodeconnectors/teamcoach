@@ -27,3 +27,7 @@ export function sendPasswordResetLink(payload) {
 export function resetPassword(payload) {
     return api.post('reset-password', payload);
 }
+
+export function resendEmailVerificationEmail(payload) {
+    return api.post('resend-email-verification-email', payload);
+}

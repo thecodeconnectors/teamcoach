@@ -46,7 +46,7 @@
             </Dialog>
         </TransitionRoot>
 
-        <Sidebar :navigationGroups="navigationGroups" />
+        <Sidebar :navigationGroups="navigationGroups" :bottomNavigation="bottomNavigation" />
 
         <div class="flex flex-col w-0 flex-1 overflow-hidden">
             <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b">
@@ -111,6 +111,7 @@ let navigationGroups = computed(() => {
                 {name: 'Teams', route: 'teams', icon: 'users', current: fullPath.value.startsWith('/teams')},
                 {name: 'Players', route: 'players', icon: 'user', current: fullPath.value.startsWith('/players')},
                 {name: 'Games', route: 'games', icon: 'soccer-ball', current: fullPath.value.startsWith('/games')},
+                {name: 'Training', route: 'training', icon: 'chalkboard-user', current: fullPath.value.startsWith('/training')},
             ]
         },
     ];

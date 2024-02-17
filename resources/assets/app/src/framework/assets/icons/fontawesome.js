@@ -12,6 +12,7 @@ import {
     faBell,
     faCaretDown,
     faCaretRight,
+    faChalkboardUser,
     faChartLine,
     faChartSimple,
     faCheck,
@@ -147,4 +148,5 @@ library.add(
     faFlag,
     faFeatherPointed,
     faCircleDot,
+    faChalkboardUser
 );

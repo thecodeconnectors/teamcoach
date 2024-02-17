@@ -33,14 +33,14 @@ import {useStore} from '@/framework/store';
 const store = useStore();
 
 const message = computed(() => store.flashMessage);
-const text = computed(() => message.value?.text);
+const text = computed(() => message.value?.text ? message.value?.text : message.text);
+const type = computed(() => message.value?.type ? message.value?.type : message.type);
 const color = computed(() => {
     const messageColors = {
         error: 'red',
         info: 'blue',
         success: 'green',
     };
-    const type = message.value?.type;
     return messageColors[type] ?? 'green';
 });
 

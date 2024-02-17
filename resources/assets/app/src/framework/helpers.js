@@ -73,3 +73,18 @@ export function isCurrent(path) {
     const router = useRouter();
     return router.currentRoute.value.fullPath.startsWith(path);
 }
+
+export function listContainsObject(haystack, needle) {
+    return haystack.findIndex(item => JSON.stringify(item) === JSON.stringify(needle)) !== -1;
+};
+
+export function toggleListObject(list, object) {
+    const index = list.findIndex(item => JSON.stringify(item) === JSON.stringify(object));
+    if (index !== -1) {
+        list.splice(index, 1);
+    } else {
+        list.push(object);
+    }
+
+    return list;
+};

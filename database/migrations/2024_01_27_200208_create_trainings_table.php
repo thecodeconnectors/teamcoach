@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Player;
+use App\Models\Account;
 use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,19 +10,18 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::create('team_player', function (Blueprint $table) {
+        Schema::create('trainings', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Account::class);
             $table->foreignIdFor(Team::class);
-            $table->foreignIdFor(Player::class);
-
+            $table->timestamp('start_at');
             $table->timestamps();
-
-            $table->unique(['team_id', 'player_id']);
+            $table->softDeletes();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('game_player');
+        Schema::dropIfExists('trainings');
     }
 };

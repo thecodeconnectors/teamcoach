@@ -34,7 +34,6 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
 import {useRouter} from 'vue-router';
 import {useStore} from '@/framework/store';
 import Icon from '@/framework/components/common/icon/Icon.vue';
@@ -43,17 +42,14 @@ const store = useStore();
 const router = useRouter();
 
 const props = defineProps({
+    bottomNavigation: {
+        type: Array,
+        default: [],
+    },
     navigationGroups: {
         type: Array,
         default: [],
     },
 });
-
-const fullPath = computed(() => router.currentRoute.value.fullPath);
-
-const bottomNavigation = computed(() => [
-    {name: 'Users', route: 'users', icon: 'users', current: fullPath.value.startsWith('/users')},
-    {name: 'Settings', route: 'settings', icon: 'cog', current: fullPath.value.startsWith('/settings')},
-]);
 
 </script>

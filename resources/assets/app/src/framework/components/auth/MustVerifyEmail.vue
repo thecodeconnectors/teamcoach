@@ -20,7 +20,7 @@
 
 import Heading from '@/framework/components/auth/Heading.vue';
 import Link from '@/framework/components/auth/Link.vue';
-import {sendPasswordResetLink} from '@/framework/components/auth/auth.api';
+import {resendEmailVerificationEmail} from '@/framework/components/auth/auth.api';
 import FlashMessage from '@/framework/components/common/alerts/FlashMessage.vue';
 import InputButton from '@/framework/components/common/form/InputButton.vue';
 import {ref} from 'vue';
@@ -35,12 +35,11 @@ let isLoading = false;
 const submitForm = async () => {
     isLoading = true;
     try {
-        const {message} = await sendPasswordResetLink(form.value);
+        const {message} = await resendEmailVerificationEmail(form.value);
         store.setFlashMessage({text: message});
     } catch (error) {
-        isLoading = false;
+
     } finally {
-        form.value = {};
         isLoading = false;
     }
 };

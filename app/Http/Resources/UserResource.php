@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'profile_picture' => $this->profile_picture,
             'email_verified_at' => $this->email_verified_at,
             'permissions' => PermissionResource::collection($this->getPlanCorrectedPermissions()),
+            'roles' => RoleResource::collection($this->roles),
         ];
     }
 }

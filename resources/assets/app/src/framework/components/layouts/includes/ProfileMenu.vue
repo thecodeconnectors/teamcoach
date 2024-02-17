@@ -12,51 +12,32 @@
                     <router-link :to="item.route" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">{{ item.name }}</router-link>
                 </MenuItem>
 
-                <span @click="onClearCache" class="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                <span v-if="hasRole('admin')" @click="onClearCache" class="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                     Clear Cache
                 </span>
-
-                <a :href="frontendUrl" target="_blank" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Frontend</a>
             </MenuItems>
         </transition>
     </Menu>
 </template>
 
-<script>
+<script setup>
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue';
 import {useStore} from '@/framework/store';
 import {computed} from 'vue';
 import {clearCache} from '@/framework/components/cache/cache.api';
+import {useAuth} from '@/framework/composables/use-auth.js';
 
-export default {
-    name: 'ProfileMenu',
-    components: {
-        Menu,
-        MenuButton,
-        MenuItem,
-        MenuItems,
-    },
-    setup() {
-        const store = useStore();
-        const user = computed(() => store.user);
-        const frontendUrl = computed(() => '//' + store.frontendDomain);
+const {hasRole} = useAuth();
+const store = useStore();
+const user = computed(() => store.user);
 
-        const userNavigation = computed(() => [
-            {name: 'Your Profile', route: {name: 'users.edit', params: {id: user.value.id}}},
-            {name: 'Sign out', route: {name: 'auth.logout'}},
-        ]);
+const userNavigation = computed(() => [
+    {name: 'Your Profile', route: {name: 'users.edit', params: {id: user.value.id}}},
+    {name: 'Sign out', route: {name: 'auth.logout'}},
+]);
 
-        const onClearCache = async function () {
-            await clearCache();
-            await store.addToastMessage({title: 'Cache cleared'});
-        };
-
-        return {
-            user,
-            userNavigation,
-            frontendUrl,
-            onClearCache,
-        };
-    },
+const onClearCache = async () => {
+    await clearCache();
+    await store.addToastMessage({title: 'Cache cleared'});
 };
 </script>

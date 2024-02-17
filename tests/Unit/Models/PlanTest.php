@@ -11,7 +11,7 @@ class PlanTest extends TestCase
     {
         $plan = new Plan('free');
 
-        $this->assertCount(3, $plan->eventTypes());
+        $this->assertCount(2, $plan->playerActionEventTypes());
     }
 
 }

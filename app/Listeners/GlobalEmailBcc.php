@@ -11,7 +11,7 @@ class GlobalEmailBcc
     public function handle(MessageSending $event): void
     {
         if ($this->shouldSendBcc($event)) {
-            foreach ((array)config('mail.global_bcc') as $address) {
+            foreach (array_filter((array)config('mail.global_bcc')) as $address) {
                 $event->message->addBcc($address);
             }
         }
@@ -22,5 +22,4 @@ class GlobalEmailBcc
         return !in_array($event->data['__laravel_notification'] ?? '', $this->disabledNotifications, false)
             && !$event->message->getHeaders()->has('skiplog');
     }
-
 }

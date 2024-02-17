@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contract\BelongsToAccount;
 use App\Enums\EventType;
 use App\Enums\Position;
+use App\Modules\Attendance\Traits\Attendee;
 use App\Repositories\Filters\Traits\FiltersRecords;
 use App\Traits\HasAccount;
 use App\Traits\HasProfilePicture;
@@ -27,10 +28,11 @@ use Illuminate\Support\Facades\Cache;
  */
 class Player extends Model implements BelongsToAccount
 {
-    use SoftDeletes;
-    use HasProfilePicture;
-    use FiltersRecords;
+    use Attendee;
     use HasAccount;
+    use SoftDeletes;
+    use FiltersRecords;
+    use HasProfilePicture;
 
     protected $guarded = [];
 

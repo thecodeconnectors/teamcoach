@@ -28,6 +28,7 @@ class RoleAndPermissionSeeder extends Seeder
         $this->setupTeamPermissions();
         $this->setupPlayerPermissions();
         $this->setupEventPermissions();
+        $this->setupTrainingPermissions();
     }
 
     private function createRoles(): void
@@ -96,4 +97,17 @@ class RoleAndPermissionSeeder extends Seeder
         $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
         $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
     }
+
+    private function setupTrainingPermissions(): void
+    {
+        $viewAny = Permission::query()->firstOrCreate(['name' => 'training.viewAny']);
+        $view = Permission::query()->firstOrCreate(['name' => 'training.view']);
+        $create = Permission::query()->firstOrCreate(['name' => 'training.create']);
+        $update = Permission::query()->firstOrCreate(['name' => 'training.update']);
+        $delete = Permission::query()->firstOrCreate(['name' => 'training.delete']);
+
+        $this->ownerRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+        $this->adminRole->givePermissionTo($viewAny, $view, $create, $update, $delete);
+    }
+    
 }
