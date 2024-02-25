@@ -15,6 +15,7 @@ class TrainingFactory extends Factory
     public function definition(): array
     {
         return [
+            'team_id' => fn () => TeamFactory::new(),
             'account_id' => fn () => AccountFactory::new(),
             'start_at' => $this->faker->dateTime,
         ];

@@ -3,6 +3,7 @@
 namespace Feature\Http\Controllers;
 
 use App\Models\Training;
+use Database\Factories\TeamFactory;
 use Database\Factories\TrainingFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -52,10 +53,16 @@ class TrainingControllerTest extends TestCase
 
     public function testItCreatesATraining(): void
     {
-        $payload = ['start_at' => TestCase::$now];
+        $user = $this->owner();
+        $team = TeamFactory::new()->for($user->account)->create();
+
+        $payload = [
+            'team_id' => $team->id,
+            'start_at' => TestCase::$now,
+        ];
 
         $this
-            ->actingAs($this->owner())
+            ->actingAs($user)
             ->post('api/training', $payload)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(function (AssertableJson $json) use ($payload) {
@@ -82,9 +89,13 @@ class TrainingControllerTest extends TestCase
     public function testItUpdatesATraining(): void
     {
         $user = $this->owner();
-        $training = TrainingFactory::new()->for($user->account)->create();
+        $team = TeamFactory::new()->for($user->account)->create();
+        $training = TrainingFactory::new()->for($user->account)->for($team)->create(['start_at' => TestCase::$now]);
 
-        $payload = ['start_at' => TestCase::$now];
+        $payload = [
+            'team_id' => $team->id,
+            'start_at' => TestCase::$now,
+        ];
 
         $this
             ->actingAs($user)
