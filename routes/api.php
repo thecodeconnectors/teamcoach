@@ -15,6 +15,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingPlayerController;
 use App\Http\Controllers\UserController;
+use App\Modules\Attendance\Http\Controllers\AttendanceStateController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('settings/{key}', [SettingsController::class, 'store'])->where('key', implode('|', array_keys(config('settings'))));
@@ -23,6 +24,7 @@ Route::get('avatars', [AvatarController::class, 'index']);
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('game-player-types', [GamePlayerTypeController::class, 'index']);
 Route::get('player-action-event-types', [PlayerActionEventTypeController::class, 'index']);
+Route::get('attendance-states', [AttendanceStateController::class, 'index']);
 
 Route::post('games/{game}/publish', [GamePublishController::class, 'publish']);
 Route::post('games/{game}/unpublish', [GamePublishController::class, 'unpublish']);
@@ -36,6 +38,7 @@ Route::post('games/{game}/pause', [GameStopwatchController::class, 'pause']);
 Route::post('games/{game}/resume', [GameStopwatchController::class, 'resume']);
 
 Route::post('training/{training}/players', [TrainingPlayerController::class, 'store']);
+Route::patch('training/{training}/players/{player}', [TrainingPlayerController::class, 'update']);
 
 Route::apiResource('users', UserController::class);
 Route::apiResource('games', GameController::class);

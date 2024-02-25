@@ -37,30 +37,29 @@ trait Attendable
         return $this;
     }
 
-    public function acceptAttendance(Model|BelongsToAccount $attendee): Model|BelongsToAccount
+    public function acceptAttendance(Model|BelongsToAccount $attendee): Attendance
     {
-        return $this->updateAttendenceState($attendee, AttendanceState::Accepted);
+        return $this->updateAttendanceState($attendee, AttendanceState::Accepted);
     }
 
-    public function declineAttendance(Model|BelongsToAccount $attendee): Model|BelongsToAccount
+    public function declineAttendance(Model|BelongsToAccount $attendee): Attendance
     {
-        return $this->updateAttendenceState($attendee, AttendanceState::Declined);
+        return $this->updateAttendanceState($attendee, AttendanceState::Declined);
     }
 
-    private function updateAttendenceState(Model|BelongsToAccount $attendee, AttendanceState $state): Model|BelongsToAccount
+    public function updateAttendanceState(Model|BelongsToAccount $attendee, AttendanceState $state): Attendance
     {
-        /** @var Model $attendable */
-        $attendable = $this->attendees()->where([
+        /** @var Attendance $attendance */
+        $attendance = $this->attendees()->where([
             'account_id' => $attendee->account_id,
             'attendable_type' => $this->getMorphClass(),
             'attendable_id' => $this->getKey(),
             'attendee_type' => $attendee->getMorphClass(),
             'attendee_id' => $attendee->getKey(),
         ])->first();
+        $attendance->update(['state' => $state]);
 
-        $attendable->update(['state' => $state]);
-
-        return $attendable;
+        return $attendance;
     }
 
 }

@@ -28,5 +28,6 @@ export function deleteTraining(id) {
 }
 
 export function storeTrainingAttendance(trainingId, ids) {
+    // todo move to attendance.api.js
     return api.post(`training/${trainingId}/players`, {ids});
 }

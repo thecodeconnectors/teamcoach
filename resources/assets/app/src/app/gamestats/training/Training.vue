@@ -26,7 +26,12 @@
                                          <ProfilePicture :src="attendee.profile_picture" :alt="attendee.name" width="28" />
                                          <span class="ml-2">{{ attendee.name }}</span>
                                     </span>
-                                    <AttendeeStatePill :attendee="attendee" />
+                                    <AttendeeState
+                                        :endpoint="`training/${state.training.id}/players/${attendee.attendee_id}`"
+                                        :attendable="state.training"
+                                        :attendee="attendee"
+                                        @onChange="setAttendeeState"
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -80,7 +85,7 @@ import Icon from '@/framework/components/common/icon/Icon.vue';
 import ProfilePicture from '@/app/gamestats/players/ProfilePicture.vue';
 import {listContainsObject, toggleListObject} from '@/framework/helpers.js';
 import SlideOver from '@/framework/components/common/modals/SlideOver.vue';
-import AttendeeStatePill from '@/app/gamestats/attendance/AttendeeStatePill.vue';
+import AttendeeState from '@/app/attendance/AttendeeState.vue';
 
 const {hasPermission} = useAuth();
 const store = useStore();
@@ -173,6 +178,8 @@ const toggleAttendee = player => {
 };
 
 const attendeeIsAdded = player => listContainsObject(state.newAttendees, player);
+
+const setAttendeeState = (player, attendeeState) => player.state = attendeeState;
 
 loadTeams();
 if (isEditForm.value) {
