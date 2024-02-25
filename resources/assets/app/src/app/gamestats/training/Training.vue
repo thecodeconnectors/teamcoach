@@ -39,7 +39,6 @@
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
                         <InputButton v-if="isEditForm && hasPermission('training.delete')" type="button" label="Delete" color="white" text-color="gray-600" @click="state.showConfirmDelete = true" />
                         <span v-else></span>
-
                         <InputButton v-if="(isEditForm && hasPermission('training.update')) || hasPermission('training.create')" type="button" label="Add attendees" @click="state.showAddAttendees = true" />
                         <InputButton v-if="(isEditForm && hasPermission('training.update')) || hasPermission('training.create')" :is-loading="state.isLoading" type="submit" label="Save" />
                     </div>

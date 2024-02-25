@@ -14,11 +14,9 @@ class GamePublishController extends Controller
         /** @var Game $game */
         $game = Game::query()->where('url_secret', $urlSecret)->first();
 
-        if (!$game->is_public) {
-            return response('', Response::HTTP_FORBIDDEN);
-        }
-
-        return new GamePlayResource($game);
+        return $game->is_public
+            ? new GamePlayResource($game)
+            : response('', Response::HTTP_FORBIDDEN);
     }
 
     public function publish(GamePublishRequest $request, Game $game): GamePlayResource
