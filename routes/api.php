@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GamePlayController;
@@ -10,12 +9,13 @@ use App\Http\Controllers\GameStopwatchController;
 use App\Http\Controllers\PlayerActionEventTypeController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PositionController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingPlayerController;
-use App\Http\Controllers\UserController;
 use App\Modules\Attendance\Http\Controllers\AttendanceStateController;
+use App\Modules\Settings\Http\Controllers\SettingsController;
+use App\Modules\Users\Http\Controllers\AvatarController;
+use App\Modules\Users\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('settings/{key}', [SettingsController::class, 'store'])->where('key', implode('|', array_keys(config('settings'))));

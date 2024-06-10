@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Filters;
 
-use App\Models\User;
+use App\Modules\Users\Models\User;
 use App\Repositories\Filters\Contracts\Filters;
 use App\Repositories\Filters\Traits\ExtendsFilters;
 use Illuminate\Database\Eloquent\Builder;

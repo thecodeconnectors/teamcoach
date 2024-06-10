@@ -6,7 +6,7 @@ use App\Models\Game;
 use App\Models\Player;
 use App\Models\Team;
 use App\Models\Training;
-use App\Models\User;
+use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;

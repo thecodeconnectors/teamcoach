@@ -10,7 +10,7 @@
                width-class="w-screen max-w-2xl">
         <div class="sm:overflow-hidden">
             <div class="bg-white space-y-6">
-                <InputButton label="Accept" class="w-full" @click="updateAttendance('accepted')" :disabled="state.isLoading" />
+                <InputButton color="green" label="Accept" class="w-full" @click="updateAttendance('accepted')" :disabled="state.isLoading" />
                 <InputButton color="gray" label="Maybe" class="w-full" @click="updateAttendance('maybe')" :disabled="state.isLoading" />
                 <InputButton color="red" label="Decline" class="w-full" @click="updateAttendance('declined')" :disabled="state.isLoading" />
             </div>

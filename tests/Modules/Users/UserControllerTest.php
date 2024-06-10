@@ -1,8 +1,8 @@
 <?php
 
-namespace Feature\Http\Controllers;
+namespace Modules\Users;
 
-use App\Models\User;
+use App\Modules\Users\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;

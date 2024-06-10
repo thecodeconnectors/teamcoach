@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Modules\Users\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /**
- * @mixin Permission
+ * @mixin Role
  */
-class PermissionResource extends JsonResource
+class RoleResource extends JsonResource
 {
     public function toArray($request): string
     {

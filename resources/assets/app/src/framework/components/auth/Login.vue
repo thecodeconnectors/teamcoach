@@ -1,7 +1,7 @@
 <template>
     <Heading heading="Login" />
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 sm:shadow sm:rounded-lg sm:px-10">
+        <div class="bg-white dark:bg-gray-800 py-8 px-4 sm:shadow sm:rounded-lg sm:px-10">
             <FlashMessage />
             <form role="form" @submit.prevent="submitForm" class="space-y-6">
                 <InputField v-model="form.email" id="email" type="email" label="Email address" validation-rules="required|email|minlength:3|maxlength:150" />

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Settings\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateSettingRequest;
-use App\Http\Resources\SettingResource;
+use App\Modules\Settings\Http\Resources\SettingResource;
 use App\Repositories\SettingsRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

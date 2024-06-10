@@ -1,24 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Users\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
 class AvatarController extends Controller
 {
     public function index(): JsonResponse
     {
-        $avatars = [];
-
-        foreach (config('avatars.avatars') as $item) {
-            $avatars[] = [
+        return response()->json([
+            'data' => collect(config('avatars.avatars'))->map(fn ($item) => [
                 'id' => url("storage/avatars/{$item}"),
                 'name' => $item,
-            ];
-        }
-
-        return response()->json([
-            'data' => $avatars,
+            ])->toArray(),
         ]);
     }
 }

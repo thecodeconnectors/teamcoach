@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\Users\Models;
 
 use App\Contract\BelongsToAccount;
 use App\Modules\Attendance\Traits\Attendee;
@@ -15,6 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -30,6 +31,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $avatar
  * @property string $gravatar
  * @property string $profile_picture
+ *
+ * @property \Illuminate\Database\Eloquent\Collection<Role> $roles
  */
 class User extends Authenticatable implements MustVerifyEmailContract, BelongsToAccount
 {

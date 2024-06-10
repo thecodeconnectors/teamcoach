@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Models\User;
 use App\Modules\Users\Enums\RoleType;
+use App\Modules\Users\Models\User;
 use Database\Factories\UserFactory;
 use Database\Seeders\RoleAndPermissionSeeder;
 

@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\CsrfCookieController;
-use App\Http\Controllers\CurrentUserController;
-use App\Http\Controllers\ResendEmailVerificationEmailController;
+use App\Modules\Users\Http\Controllers\CurrentUserController;
+use App\Modules\Users\Http\Controllers\ResendEmailVerificationEmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

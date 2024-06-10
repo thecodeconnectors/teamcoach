@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Users\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\UserResource;
-use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Http\Controllers\Controller;
+use App\Modules\Users\Http\Requests\UpdateUserRequest;
+use App\Modules\Users\Http\Resources\UserResource;
+use App\Modules\Users\Models\User;
+use App\Modules\Users\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Policies;
+namespace App\Modules\Users\Policies;
 
-use App\Models\User;
 use App\Modules\Users\Enums\RoleType;
+use App\Modules\Users\Models\User;
 
 class UserPolicy
 {

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
+use App\Modules\Users\Models\User;
 use App\Repositories\Filters\Contracts\Filters;
 use App\Traits\LimitResultsByAccount;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

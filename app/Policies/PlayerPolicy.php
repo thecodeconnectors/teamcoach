@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\Player;
-use App\Models\User;
 use App\Modules\Users\Enums\RoleType;
+use App\Modules\Users\Models\User;
 
 class PlayerPolicy
 {

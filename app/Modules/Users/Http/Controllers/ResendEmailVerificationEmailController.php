@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Users\Http\Controllers;
 
-use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Modules\Users\Http\Resources\UserResource;
+use App\Modules\Users\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;

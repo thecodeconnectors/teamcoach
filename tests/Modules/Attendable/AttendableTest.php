@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Modules;
+namespace Modules\Attendable;
 
 use App\Models\Training;
 use App\Modules\Attendance\Enums\AttendanceState;

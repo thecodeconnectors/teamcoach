@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\Game;
-use App\Models\User;
 use App\Modules\Users\Enums\RoleType;
+use App\Modules\Users\Models\User;
 
 class GamePolicy
 {
@@ -13,7 +13,7 @@ class GamePolicy
         // todo: make god permission
         return $user->hasRole(RoleType::Admin->value) ?: null;
     }
-    
+
     public function viewAny(User $user): bool
     {
         return $user->hasPermissionTo('game.viewAny');

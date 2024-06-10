@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventType;
+use App\Modules\Users\Models\User;
 use Illuminate\Support\Arr;
 
 readonly class Plan
