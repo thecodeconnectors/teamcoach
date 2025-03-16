@@ -34,9 +34,6 @@ use Illuminate\Support\Str;
  * @property Team $team
  * @property Team $opponent
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $players
- * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $substitutes
- * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $playing
- * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $present
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Event> $events
  * @property Carbon $start_at
  * @property Carbon|null $started_at
