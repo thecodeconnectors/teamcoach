@@ -11,7 +11,6 @@ trait LimitResultsByAccount
     {
         return $builder->when(!$this->user()?->hasRole(RoleType::Admin->value), function (Builder $builder) {
             $builder->where('account_id', $this->user()?->account_id);
-        });;
+        });
     }
-
 }

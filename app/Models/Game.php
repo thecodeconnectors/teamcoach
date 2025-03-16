@@ -34,6 +34,9 @@ use Illuminate\Support\Str;
  * @property Team $team
  * @property Team $opponent
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $players
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $substitutes
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $playing
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Player> $present
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Event> $events
  * @property Carbon $start_at
  * @property Carbon|null $started_at
@@ -105,6 +108,11 @@ class Game extends Model implements BelongsToAccount
     public function playing(): Collection
     {
         return $this->players->where('pivot.type', GamePlayerType::Playing->value);
+    }
+
+    public function present(): Collection
+    {
+        return $this->players->where('pivot.type', '!=', GamePlayerType::Absent->value);
     }
 
     public function events(): HasMany
